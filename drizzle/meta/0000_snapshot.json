@@ -1,0 +1,685 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "fdb9119f-0cbd-4fbb-a42e-aeeebb64ec19",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "raw_breeding_combos": {
+      "name": "raw_breeding_combos",
+      "columns": {
+        "parent1_id": {
+          "name": "parent1_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "parent2_id": {
+          "name": "parent2_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_breeding_combos_parent1_id_raw_pals_id_fk": {
+          "name": "raw_breeding_combos_parent1_id_raw_pals_id_fk",
+          "tableFrom": "raw_breeding_combos",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "parent1_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "raw_breeding_combos_parent2_id_raw_pals_id_fk": {
+          "name": "raw_breeding_combos_parent2_id_raw_pals_id_fk",
+          "tableFrom": "raw_breeding_combos",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "parent2_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "raw_breeding_combos_child_id_raw_pals_id_fk": {
+          "name": "raw_breeding_combos_child_id_raw_pals_id_fk",
+          "tableFrom": "raw_breeding_combos",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "child_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "raw_breeding_combos_parent1_id_parent2_id_pk": {
+          "columns": [
+            "parent1_id",
+            "parent2_id"
+          ],
+          "name": "raw_breeding_combos_parent1_id_parent2_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_elements": {
+      "name": "raw_elements",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "raw_elements_name_unique": {
+          "name": "raw_elements_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "meta": {
+      "name": "meta",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_mount_types": {
+      "name": "raw_mount_types",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "raw_mount_types_name_unique": {
+          "name": "raw_mount_types_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_pal_elements": {
+      "name": "raw_pal_elements",
+      "columns": {
+        "pal_id": {
+          "name": "pal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "element_id": {
+          "name": "element_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_pal_elements_pal_id_raw_pals_id_fk": {
+          "name": "raw_pal_elements_pal_id_raw_pals_id_fk",
+          "tableFrom": "raw_pal_elements",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "raw_pal_elements_element_id_raw_elements_id_fk": {
+          "name": "raw_pal_elements_element_id_raw_elements_id_fk",
+          "tableFrom": "raw_pal_elements",
+          "tableTo": "raw_elements",
+          "columnsFrom": [
+            "element_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "raw_pal_elements_pal_id_element_id_pk": {
+          "columns": [
+            "pal_id",
+            "element_id"
+          ],
+          "name": "raw_pal_elements_pal_id_element_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_pal_mounts": {
+      "name": "raw_pal_mounts",
+      "columns": {
+        "pal_id": {
+          "name": "pal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "mount_type_id": {
+          "name": "mount_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "unlock_level": {
+          "name": "unlock_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_pal_mounts_pal_id_raw_pals_id_fk": {
+          "name": "raw_pal_mounts_pal_id_raw_pals_id_fk",
+          "tableFrom": "raw_pal_mounts",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "raw_pal_mounts_mount_type_id_raw_mount_types_id_fk": {
+          "name": "raw_pal_mounts_mount_type_id_raw_mount_types_id_fk",
+          "tableFrom": "raw_pal_mounts",
+          "tableTo": "raw_mount_types",
+          "columnsFrom": [
+            "mount_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "raw_pal_mounts_pal_id_mount_type_id_pk": {
+          "columns": [
+            "pal_id",
+            "mount_type_id"
+          ],
+          "name": "raw_pal_mounts_pal_id_mount_type_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_pal_movement": {
+      "name": "raw_pal_movement",
+      "columns": {
+        "pal_id": {
+          "name": "pal_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "slow_walk_speed": {
+          "name": "slow_walk_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "walk_speed": {
+          "name": "walk_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "run_speed": {
+          "name": "run_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ride_sprint_speed": {
+          "name": "ride_sprint_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "transport_speed": {
+          "name": "transport_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "swim_speed": {
+          "name": "swim_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "swim_dash_speed": {
+          "name": "swim_dash_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "stamina": {
+          "name": "stamina",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_pal_movement_pal_id_raw_pals_id_fk": {
+          "name": "raw_pal_movement_pal_id_raw_pals_id_fk",
+          "tableFrom": "raw_pal_movement",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_pal_stats": {
+      "name": "raw_pal_stats",
+      "columns": {
+        "pal_id": {
+          "name": "pal_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "size": {
+          "name": "size",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "rarity": {
+          "name": "rarity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "health": {
+          "name": "health",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "food": {
+          "name": "food",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "melee_attack": {
+          "name": "melee_attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "attack": {
+          "name": "attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "defense": {
+          "name": "defense",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "work_speed": {
+          "name": "work_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "support": {
+          "name": "support",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "capture_rate": {
+          "name": "capture_rate",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "male_probability": {
+          "name": "male_probability",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "combi_rank": {
+          "name": "combi_rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "egg": {
+          "name": "egg",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_pal_stats_pal_id_raw_pals_id_fk": {
+          "name": "raw_pal_stats_pal_id_raw_pals_id_fk",
+          "tableFrom": "raw_pal_stats",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_pal_work_suitabilities": {
+      "name": "raw_pal_work_suitabilities",
+      "columns": {
+        "pal_id": {
+          "name": "pal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "work_type_id": {
+          "name": "work_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "level": {
+          "name": "level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "raw_pal_work_suitabilities_pal_id_raw_pals_id_fk": {
+          "name": "raw_pal_work_suitabilities_pal_id_raw_pals_id_fk",
+          "tableFrom": "raw_pal_work_suitabilities",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "raw_pal_work_suitabilities_work_type_id_raw_work_types_id_fk": {
+          "name": "raw_pal_work_suitabilities_work_type_id_raw_work_types_id_fk",
+          "tableFrom": "raw_pal_work_suitabilities",
+          "tableTo": "raw_work_types",
+          "columnsFrom": [
+            "work_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "raw_pal_work_suitabilities_pal_id_work_type_id_pk": {
+          "columns": [
+            "pal_id",
+            "work_type_id"
+          ],
+          "name": "raw_pal_work_suitabilities_pal_id_work_type_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_pals": {
+      "name": "raw_pals",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "number": {
+          "name": "number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "variant": {
+          "name": "variant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "raw_work_types": {
+      "name": "raw_work_types",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "raw_work_types_name_unique": {
+          "name": "raw_work_types_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
