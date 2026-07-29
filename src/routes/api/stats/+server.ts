@@ -8,9 +8,10 @@ import {
 	mountTypes,
 	elements,
 	workTypes,
+	breedingCombos,
 	meta
 } from '$lib/server/db/schema.js';
-import { count, eq } from 'drizzle-orm';
+import { asc, count, eq, isNotNull } from 'drizzle-orm';
 import { createLogger } from '$lib/server/logger.js';
 import { json } from '@sveltejs/kit';
 import type { Stats } from '$lib/types.js';
@@ -29,12 +30,13 @@ export const GET: RequestHandler = async () => {
 		);
 		const failedPalNames = allPalRows.filter((p) => !statsIds.has(p.id)).map((p) => p.name);
 
-		// Element counts: how many pals per element
+		// Element counts: how many pals per element (ordered by source display order)
 		const elementRows = await db
 			.select({ name: elements.name, count: count() })
 			.from(palElements)
 			.innerJoin(elements, eq(palElements.elementId, elements.id))
 			.groupBy(elements.name)
+			.orderBy(asc(elements.sortOrder))
 			.all();
 
 		const elementCounts: Record<string, number> = {};
@@ -42,12 +44,13 @@ export const GET: RequestHandler = async () => {
 			elementCounts[row.name] = row.count;
 		}
 
-		// Work type counts: how many pals have each work suitability
+		// Work type counts: how many pals have each work suitability (ordered by source display order)
 		const workTypeRows = await db
 			.select({ name: workTypes.name, count: count() })
 			.from(palWorkSuitabilities)
 			.innerJoin(workTypes, eq(palWorkSuitabilities.workTypeId, workTypes.id))
 			.groupBy(workTypes.name)
+			.orderBy(asc(workTypes.sortOrder))
 			.all();
 
 		const workTypeCounts: Record<string, number> = {};
@@ -78,6 +81,19 @@ export const GET: RequestHandler = async () => {
 		}
 
 		const total = totalPals?.count ?? 0;
+
+		// Breeding combos count
+		const [breedingTotal] = await db.select({ count: count() }).from(breedingCombos).all();
+		const breedingCombosCount = breedingTotal?.count ?? 0;
+
+		// Breeding missing: pals without a code (can't be used in breeding lookup)
+		const [palsWithCode] = await db
+			.select({ count: count() })
+			.from(palStats)
+			.where(isNotNull(palStats.code))
+			.all();
+		const breedingMissing = total - (palsWithCode?.count ?? 0);
+
 		if (total === 0 && !lastRefresh) {
 			log.warn('db is empty, needs refresh');
 		} else {
@@ -91,6 +107,8 @@ export const GET: RequestHandler = async () => {
 			elementCounts,
 			workTypeCounts,
 			mountCounts,
+			breedingCombos: breedingCombosCount,
+			breedingMissing,
 			lastRefresh
 		};
 
@@ -107,6 +125,8 @@ export const GET: RequestHandler = async () => {
 			elementCounts: {},
 			workTypeCounts: {},
 			mountCounts: {},
+			breedingCombos: 0,
+			breedingMissing: 0,
 			lastRefresh: null
 		};
 

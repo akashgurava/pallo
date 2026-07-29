@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Progress } from '$lib/components/ui/progress/index.js';
+	import RefreshSection from '$lib/components/RefreshSection.svelte';
 	import type { Stats } from '$lib/types.js';
 
 	let stats = $state<Stats>({
@@ -11,13 +10,10 @@
 		elementCounts: {},
 		workTypeCounts: {},
 		mountCounts: {},
+		breedingCombos: 0,
+		breedingMissing: 0,
 		lastRefresh: null
 	});
-
-	let refreshing = $state(false);
-	let progress = $state(0);
-	let progressMessage = $state('');
-	let showProgress = $state(false);
 
 	async function fetchStats(): Promise<void> {
 		try {
@@ -32,69 +28,9 @@
 		}
 	}
 
-	async function refresh(): Promise<void> {
-		if (refreshing) return;
-		refreshing = true;
-		showProgress = true;
-		progress = 0;
-		progressMessage = '';
-
-		try {
-			const res = await fetch('/api/refresh', { method: 'POST' });
-			const reader = res.body?.getReader();
-			if (!reader) {
-				console.error('No response stream');
-				refreshing = false;
-				return;
-			}
-
-			const decoder = new TextDecoder();
-			let buffer = '';
-
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
-
-				buffer += decoder.decode(value, { stream: true });
-				const lines = buffer.split('\n\n');
-				buffer = lines.pop() ?? '';
-
-				for (const line of lines) {
-					if (!line.startsWith('data: ')) continue;
-					const event = JSON.parse(line.slice(6));
-					if (event.progress >= 0) {
-						progress = event.progress;
-						progressMessage = event.message;
-					}
-				}
-			}
-
-			await fetchStats();
-		} catch (err) {
-			console.error('Refresh failed:', err);
-		} finally {
-			refreshing = false;
-		}
-	}
-
 	onMount(() => {
 		fetchStats();
 	});
-
-	function timeAgo(dateStr: string): string {
-		const now = Date.now();
-		const then = new Date(dateStr).getTime();
-		const seconds = Math.floor((now - then) / 1000);
-
-		if (seconds < 60) return 'just now';
-		const minutes = Math.floor(seconds / 60);
-		if (minutes < 60) return `${minutes} min ago`;
-		const hours = Math.floor(minutes / 60);
-		if (hours < 24) return `${hours} hr ago`;
-		const days = Math.floor(hours / 24);
-		if (days === 1) return '1 day ago';
-		return `${days} days ago`;
-	}
 </script>
 
 <div class="mx-auto h-full max-w-5xl px-6 pt-8">
@@ -120,6 +56,12 @@
 								{stats.failedPals}
 							</div>
 							<div class="text-sm text-muted-foreground">Stats Missing</div>
+						</div>
+						<div class="text-center">
+							<div class="text-4xl font-bold" class:text-red-400={stats.breedingMissing > 0}>
+								{stats.breedingMissing}
+							</div>
+							<div class="text-sm text-muted-foreground">Breeding Missing</div>
 						</div>
 					</div>
 				{:else}
@@ -199,27 +141,26 @@
 			</div>
 		</section>
 
-		<!-- Last Refresh + Button -->
-		<section class="space-y-4">
-			<div class="text-sm text-muted-foreground">
-				Last Refreshed: {#if stats.lastRefresh}{timeAgo(stats.lastRefresh)}{:else}Never{/if}
-			</div>
-			<div>
-				<Button
-					onclick={refresh}
-					disabled={refreshing}
-					class="bg-white text-black hover:bg-white/90"
-					size="sm"
-				>
-					Refresh DB
-				</Button>
-				{#if showProgress}
-					<div class="mt-3 space-y-1">
-						<Progress value={progress} max={100} class="h-2" />
-						<div class="text-sm text-muted-foreground">{progressMessage}</div>
+		<!-- Breeding -->
+		<section>
+			<h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+				Breeding
+			</h2>
+			<div class="h-14">
+				{#if stats.breedingCombos > 0}
+					<div class="flex flex-wrap gap-x-8 gap-y-3">
+						<div class="text-center">
+							<div class="text-4xl font-bold">{stats.breedingCombos}</div>
+							<div class="text-sm text-muted-foreground">Combinations</div>
+						</div>
 					</div>
+				{:else}
+					<div class="text-sm text-muted-foreground">None</div>
 				{/if}
 			</div>
 		</section>
+
+		<!-- Refresh -->
+		<RefreshSection lastRefresh={stats.lastRefresh} onRefreshComplete={fetchStats} />
 	</div>
 </div>

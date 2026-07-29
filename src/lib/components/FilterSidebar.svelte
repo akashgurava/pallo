@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { STAT_COLUMNS, type FilterLogic, type WorkTypeFilter, type ElementFilter, type MountFilter, type StatFilter, type StatOp } from '$lib/filters.js';
+	import ElementIcon from './ElementIcon.svelte';
+	import WorkTypeIcon from './WorkTypeIcon.svelte';
+	import LogicToggle from './LogicToggle.svelte';
 
 	const WORK_COLORS: Record<string, string> = {
 		Kindling: 'rgba(245, 158, 66, 0.12)',
@@ -124,40 +127,15 @@
 	<div>
 		<div class="mb-2 flex items-center justify-between">
 			<h3 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Elements</h3>
-			<div class="flex rounded border border-border text-xs">
-				<button
-					onclick={() => onSetElementLogic('or')}
-					class="px-2 py-0.5 transition-colors {elementLogic === 'or'
-						? 'bg-muted text-foreground'
-						: 'text-muted-foreground'}"
-				>
-					OR
-				</button>
-				<button
-					onclick={() => onSetElementLogic('and')}
-					class="px-2 py-0.5 transition-colors {elementLogic === 'and'
-						? 'bg-muted text-foreground'
-						: 'text-muted-foreground'}"
-				>
-					AND
-				</button>
-			</div>
+			<LogicToggle value={elementLogic} onchange={onSetElementLogic} />
 		</div>
 		<div class="flex flex-wrap gap-1">
 			{#each elements as element}
-				<button
+				<ElementIcon
+					name={element.name}
+					active={selectedElements.has(element.name)}
 					onclick={() => onToggleElement(element.name)}
-					class="rounded p-1.5 transition-colors {selectedElements.has(element.name)
-						? 'bg-primary/30 ring-1 ring-primary'
-						: 'hover:bg-muted'}"
-					title={element.name}
-				>
-					<img
-						src="/icons/elements/{element.name.toLowerCase()}.webp"
-						alt={element.name}
-						class="size-7"
-					/>
-				</button>
+				/>
 			{/each}
 		</div>
 	</div>
@@ -168,24 +146,7 @@
 			<h3 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
 				Work Types
 			</h3>
-			<div class="flex rounded border border-border text-xs">
-				<button
-					onclick={() => onSetWorkTypeLogic('or')}
-					class="px-2 py-0.5 transition-colors {workTypeLogic === 'or'
-						? 'bg-muted text-foreground'
-						: 'text-muted-foreground'}"
-				>
-					OR
-				</button>
-				<button
-					onclick={() => onSetWorkTypeLogic('and')}
-					class="px-2 py-0.5 transition-colors {workTypeLogic === 'and'
-						? 'bg-muted text-foreground'
-						: 'text-muted-foreground'}"
-				>
-					AND
-				</button>
-			</div>
+			<LogicToggle value={workTypeLogic} onchange={onSetWorkTypeLogic} />
 		</div>
 		<div class="grid grid-cols-4 gap-2">
 			{#each workTypes as wt}
@@ -198,17 +159,10 @@
 						? (WORK_COLORS_ACTIVE[wt.name] ?? 'rgba(255,255,255,0.1)')
 						: (WORK_COLORS[wt.name] ?? 'rgba(255,255,255,0.05)')}"
 				>
-					<button
+					<WorkTypeIcon
+						name={wt.name}
 						onclick={() => onSetWorkTypeLevel(wt.name, level > 0 ? 0 : 1)}
-						title={wt.name}
-						class="shrink-0 cursor-pointer"
-					>
-						<img
-							src="/icons/work/{wt.name.toLowerCase().replace(/ /g, '-')}.webp"
-							alt={wt.name}
-							class="size-6"
-						/>
-					</button>
+					/>
 					<select
 						class="h-4 w-6 min-w-0 appearance-none rounded bg-neutral-700 text-center text-[10px] font-medium text-foreground"
 						value={level}

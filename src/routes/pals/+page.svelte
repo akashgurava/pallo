@@ -4,6 +4,8 @@
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import FilterSidebar from '$lib/components/FilterSidebar.svelte';
+	import SortableHead from '$lib/components/SortableHead.svelte';
+	import PalTableRow from '$lib/components/PalTableRow.svelte';
 	import {
 		filterPals,
 		STAT_COLUMNS,
@@ -13,6 +15,7 @@
 		type MountFilter,
 		type StatFilter
 	} from '$lib/filters.js';
+	import { sortPals, type SortKey, type SortDir } from '$lib/sorting.js';
 	import type { PalRow } from '$lib/types.js';
 
 	let palsList = $state<PalRow[]>([]);
@@ -31,15 +34,8 @@
 	let workTypeLogic = $state<FilterLogic>('or');
 
 	// Sorting
-	type SortKey =
-		| 'id' | 'name' | 'elements' | 'work' | 'mounts'
-		| 'size' | 'rarity' | 'hp' | 'atk' | 'def' | 'food' | 'price'
-		| 'slow' | 'walk' | 'run' | 'sprint' | 'tpot' | 'swim' | 'dash' | 'stam';
-	type SortDir = 'asc' | 'desc';
 	let sortKey = $state<SortKey>('id');
 	let sortDir = $state<SortDir>('asc');
-
-	const SIZE_ORDER: Record<string, number> = { XS: 0, S: 1, M: 2, L: 3, XL: 4 };
 
 	function toggleSort(key: SortKey): void {
 		if (sortKey === key) {
@@ -47,31 +43,6 @@
 		} else {
 			sortKey = key;
 			sortDir = 'asc';
-		}
-	}
-
-	function sortIndicator(key: SortKey): string {
-		if (sortKey !== key) return '';
-		return sortDir === 'asc' ? ' ▲' : ' ▼';
-	}
-
-	function getNumericStat(pal: PalRow, key: SortKey): number | null {
-		switch (key) {
-			case 'rarity': return pal.stats?.rarity ?? null;
-			case 'hp': return pal.stats?.health ?? null;
-			case 'atk': return pal.stats?.attack ?? null;
-			case 'def': return pal.stats?.defense ?? null;
-			case 'food': return pal.stats?.food ?? null;
-			case 'price': return pal.stats?.price ?? null;
-			case 'slow': return pal.movement?.slowWalkSpeed ?? null;
-			case 'walk': return pal.movement?.walkSpeed ?? null;
-			case 'run': return pal.movement?.runSpeed ?? null;
-			case 'sprint': return pal.movement?.rideSprintSpeed ?? null;
-			case 'tpot': return pal.movement?.transportSpeed ?? null;
-			case 'swim': return pal.movement?.swimSpeed ?? null;
-			case 'dash': return pal.movement?.swimDashSpeed ?? null;
-			case 'stam': return pal.movement?.stamina ?? null;
-			default: return null;
 		}
 	}
 
@@ -88,82 +59,7 @@
 		})
 	);
 
-	function workSortValue(pal: PalRow): number {
-		const activeFilters = [...workTypeFilter.entries()].filter(([, lvl]) => lvl > 0);
-		if (activeFilters.length === 0) {
-			// No filter: sum of all work levels
-			return pal.workSuitabilities.reduce((sum, w) => sum + w.level, 0);
-		}
-		const selectedNames = activeFilters.map(([name]) => name);
-		const matchingLevels = pal.workSuitabilities
-			.filter((w) => selectedNames.includes(w.workType))
-			.map((w) => w.level);
-
-		if (workTypeLogic === 'and') {
-			// AND mode: sum of selected work levels
-			return matchingLevels.reduce((sum, l) => sum + l, 0);
-		} else {
-			// OR mode: max of selected work levels
-			return matchingLevels.length > 0 ? Math.max(...matchingLevels) : 0;
-		}
-	}
-
-	let sorted = $derived.by(() => {
-		const list = [...filtered];
-		list.sort((a, b) => {
-			// Mounts: no-mount pals always at the end regardless of direction
-			if (sortKey === 'mounts') {
-				const aHas = a.mounts.length > 0;
-				const bHas = b.mounts.length > 0;
-				if (aHas && !bHas) return -1;
-				if (!aHas && bHas) return 1;
-				if (!aHas && !bHas) return 0;
-				const aLevel = Math.min(...a.mounts.map((m) => m.unlockLevel));
-				const bLevel = Math.min(...b.mounts.map((m) => m.unlockLevel));
-				return sortDir === 'asc' ? aLevel - bLevel : bLevel - aLevel;
-			}
-
-			// Size: sort by size order, nulls last
-			if (sortKey === 'size') {
-				const aSize = SIZE_ORDER[a.stats?.size ?? ''] ?? -1;
-				const bSize = SIZE_ORDER[b.stats?.size ?? ''] ?? -1;
-				if (aSize === -1 && bSize === -1) return 0;
-				if (aSize === -1) return 1;
-				if (bSize === -1) return -1;
-				const cmp = aSize - bSize;
-				return sortDir === 'asc' ? cmp : -cmp;
-			}
-
-			// Numeric stat columns
-			const aNum = getNumericStat(a, sortKey);
-			const bNum = getNumericStat(b, sortKey);
-			if (aNum !== null || bNum !== null) {
-				if (aNum === null && bNum === null) return 0;
-				if (aNum === null) return 1;
-				if (bNum === null) return -1;
-				const cmp = aNum - bNum;
-				return sortDir === 'asc' ? cmp : -cmp;
-			}
-
-			let cmp = 0;
-			switch (sortKey) {
-				case 'id':
-					cmp = a.id - b.id;
-					break;
-				case 'name':
-					cmp = a.name.localeCompare(b.name);
-					break;
-				case 'elements':
-					cmp = a.elements.length - b.elements.length;
-					break;
-				case 'work':
-					cmp = workSortValue(a) - workSortValue(b);
-					break;
-			}
-			return sortDir === 'asc' ? cmp : -cmp;
-		});
-		return list;
-	});
+	let sorted = $derived(sortPals(filtered, sortKey, sortDir, workTypeFilter, workTypeLogic));
 
 	let activeFilterCount = $derived(
 		(nameQuery.length > 0 ? 1 : 0) +
@@ -286,6 +182,28 @@
 		onSetWorkTypeLogic: (l: FilterLogic) => (workTypeLogic = l),
 		onClear: clearFilters
 	});
+
+	const columns: { key: SortKey; label: string; width: string }[] = [
+		{ key: 'id', label: '#', width: 'w-12' },
+		{ key: 'name', label: 'Name', width: 'w-28' },
+		{ key: 'work', label: 'Work', width: 'w-36' },
+		{ key: 'size', label: 'Size', width: 'w-10' },
+		{ key: 'rarity', label: 'Rar', width: 'w-8' },
+		{ key: 'mounts', label: 'Mount', width: 'w-14' },
+		{ key: 'slow', label: 'Slow', width: 'w-8' },
+		{ key: 'walk', label: 'Walk', width: 'w-8' },
+		{ key: 'run', label: 'Run', width: 'w-8' },
+		{ key: 'sprint', label: 'Sprint', width: 'w-10' },
+		{ key: 'tpot', label: 'TPot', width: 'w-8' },
+		{ key: 'swim', label: 'Swim', width: 'w-8' },
+		{ key: 'dash', label: 'Dash', width: 'w-8' },
+		{ key: 'stam', label: 'Stam', width: 'w-8' },
+		{ key: 'hp', label: 'HP', width: 'w-8' },
+		{ key: 'atk', label: 'ATK', width: 'w-8' },
+		{ key: 'def', label: 'DEF', width: 'w-8' },
+		{ key: 'food', label: 'Food', width: 'w-8' },
+		{ key: 'price', label: 'Coin', width: 'w-10' }
+	];
 </script>
 
 <div class="flex h-full">
@@ -330,107 +248,27 @@
 					<Table.Root class="text-xs">
 						<Table.Header>
 							<Table.Row>
-								<Table.Head class="w-12 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('id')}>#{sortIndicator('id')}</Table.Head>
-								<Table.Head class="w-28 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('name')}>Name{sortIndicator('name')}</Table.Head>
-								<Table.Head class="w-36 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('work')}>Work{sortIndicator('work')}</Table.Head>
-								<Table.Head class="w-10 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('size')}>Size{sortIndicator('size')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('rarity')}>Rar{sortIndicator('rarity')}</Table.Head>
-								<Table.Head class="w-14 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('mounts')}>Mount{sortIndicator('mounts')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('slow')}>Slow{sortIndicator('slow')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('walk')}>Walk{sortIndicator('walk')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('run')}>Run{sortIndicator('run')}</Table.Head>
-								<Table.Head class="w-10 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('sprint')}>Sprint{sortIndicator('sprint')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('tpot')}>TPot{sortIndicator('tpot')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('swim')}>Swim{sortIndicator('swim')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('dash')}>Dash{sortIndicator('dash')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('stam')}>Stam{sortIndicator('stam')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('hp')}>HP{sortIndicator('hp')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('atk')}>ATK{sortIndicator('atk')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('def')}>DEF{sortIndicator('def')}</Table.Head>
-								<Table.Head class="w-8 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('food')}>Food{sortIndicator('food')}</Table.Head>
-								<Table.Head class="w-10 cursor-pointer select-none px-1 text-center" onclick={() => toggleSort('price')}>Coin{sortIndicator('price')}</Table.Head>
+								{#each columns as col}
+									<SortableHead
+										key={col.key}
+										label={col.label}
+										{sortKey}
+										{sortDir}
+										width={col.width}
+										onclick={() => toggleSort(col.key)}
+									/>
+								{/each}
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
 							{#each sorted as pal (pal.id)}
-								<Table.Row>
-									<Table.Cell class="px-1 font-mono text-muted-foreground">
-										{pal.number}{pal.variant ?? ''}
-									</Table.Cell>
-									<Table.Cell class="px-1 font-medium">
-										<div class="flex items-center gap-0.5">
-											<span class="whitespace-nowrap">{pal.name}</span>
-											{#each pal.elements as element}
-												<button
-													onclick={() => toggleElement(element)}
-													class="cursor-pointer"
-													title={element}
-												>
-													<img
-														src="/icons/elements/{element.toLowerCase()}.webp"
-														alt={element}
-														class="size-4"
-													/>
-												</button>
-											{/each}
-										</div>
-									</Table.Cell>
-									<Table.Cell class="px-1">
-										<div class="flex flex-wrap gap-0.5">
-											{#each pal.workSuitabilities as ws}
-												<button
-													onclick={() => setWorkTypeLevel(ws.workType, (workTypeFilter.get(ws.workType) ?? 0) > 0 ? 0 : 1)}
-													class="flex cursor-pointer items-center rounded bg-neutral-800/60 px-0.5"
-													title="{ws.workType} Lv.{ws.level}"
-												>
-													<img
-														src="/icons/work/{ws.workType.toLowerCase().replace(/ /g, '-')}.webp"
-														alt={ws.workType}
-														class="size-6"
-													/>
-													<span class="text-xs font-bold">{ws.level}</span>
-												</button>
-											{/each}
-										</div>
-									</Table.Cell>
-									<Table.Cell class="px-1 text-center text-muted-foreground">{pal.stats?.size ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.rarity ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1">
-										{#if pal.mounts.length > 0}
-											<div class="flex items-center gap-0.5">
-												{#each pal.mounts as mount}
-													<button
-														onclick={() => toggleMountType(mount.type)}
-														class="cursor-pointer"
-														title={mount.type}
-													>
-														<img
-															src="/icons/mounts/{mount.type.toLowerCase()}.svg"
-															alt={mount.type}
-															class="size-4"
-														/>
-													</button>
-												{/each}
-												<span class="text-muted-foreground">{pal.mounts[0].unlockLevel}</span>
-											</div>
-										{:else}
-											<span class="text-muted-foreground">-</span>
-										{/if}
-									</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.slowWalkSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.walkSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.runSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.rideSprintSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.transportSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.swimSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.swimDashSpeed ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.movement?.stamina ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.health ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.attack ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.defense ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.food ?? '-'}</Table.Cell>
-									<Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.price ?? '-'}</Table.Cell>
-								</Table.Row>
+								<PalTableRow
+									{pal}
+									{workTypeFilter}
+									onToggleElement={toggleElement}
+									onSetWorkTypeLevel={setWorkTypeLevel}
+									onToggleMountType={toggleMountType}
+								/>
 							{/each}
 						</Table.Body>
 					</Table.Root>

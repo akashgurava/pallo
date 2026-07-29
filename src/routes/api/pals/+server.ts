@@ -10,7 +10,7 @@ import {
 	palStats,
 	palMovement
 } from '$lib/server/db/schema.js';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { createLogger } from '$lib/server/logger.js';
 import { json } from '@sveltejs/kit';
 import type { PalRow } from '$lib/types.js';
@@ -41,6 +41,7 @@ export const GET: RequestHandler = async () => {
 				.from(palElements)
 				.innerJoin(elements, eq(palElements.elementId, elements.id))
 				.where(eq(palElements.palId, pal.id))
+				.orderBy(asc(elements.sortOrder))
 				.all();
 
 			const palWorkRows = await db
@@ -48,6 +49,7 @@ export const GET: RequestHandler = async () => {
 				.from(palWorkSuitabilities)
 				.innerJoin(workTypes, eq(palWorkSuitabilities.workTypeId, workTypes.id))
 				.where(eq(palWorkSuitabilities.palId, pal.id))
+				.orderBy(asc(workTypes.sortOrder))
 				.all();
 
 			const palMountRows = await db

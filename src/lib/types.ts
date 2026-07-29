@@ -6,6 +6,8 @@ export interface Stats {
 	elementCounts: Record<string, number>;
 	workTypeCounts: Record<string, number>;
 	mountCounts: Record<string, number>;
+	breedingCombos: number;
+	breedingMissing: number;
 	lastRefresh: string | null;
 }
 

@@ -3,6 +3,8 @@
         "AUTOINCREMENT",
         "libsql",
         "paldb",
-        "pallo"
+        "pallo",
+        "stam",
+        "tpot"
     ]
 }

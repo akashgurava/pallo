@@ -23,6 +23,15 @@
 						Pals
 					</NavigationMenu.Link>
 				</NavigationMenu.Item>
+				<NavigationMenu.Item>
+					<NavigationMenu.Link
+						href="/breeding"
+						class="text-base"
+						data-active={page.url.pathname.startsWith('/breeding')}
+					>
+						Breeding
+					</NavigationMenu.Link>
+				</NavigationMenu.Item>
 			</NavigationMenu.List>
 		</NavigationMenu.Root>
 	</div>
