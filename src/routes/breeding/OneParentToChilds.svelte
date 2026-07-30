@@ -304,12 +304,13 @@
 								<span class="text-muted-foreground">#{row.parent.number}</span>
 								<span>{row.parent.name}</span>
 								{#each row.parent.elements as el (el)}
-									<img
-										src="/icons/elements/{el.toLowerCase()}.webp"
-										alt={el}
-										class="size-5 cursor-pointer"
-										onclick={() => toggleElement(el)}
-									/>
+									<button type="button" class="cursor-pointer" onclick={() => toggleElement(el)}>
+										<img
+											src="/icons/elements/{el.toLowerCase()}.webp"
+											alt={el}
+											class="size-5"
+										/>
+									</button>
 								{/each}
 							</div>
 						</Table.Cell>
@@ -318,12 +319,13 @@
 								<span class="text-muted-foreground">#{row.child.number}</span>
 								<span class="font-medium">{row.child.name}</span>
 								{#each row.child.elements as el (el)}
-									<img
-										src="/icons/elements/{el.toLowerCase()}.webp"
-										alt={el}
-										class="size-5 cursor-pointer"
-										onclick={() => toggleElement(el)}
-									/>
+									<button type="button" class="cursor-pointer" onclick={() => toggleElement(el)}>
+										<img
+											src="/icons/elements/{el.toLowerCase()}.webp"
+											alt={el}
+											class="size-5"
+										/>
+									</button>
 								{/each}
 							</div>
 						</Table.Cell>
@@ -349,12 +351,13 @@
 							{#if row.child.mounts.length > 0}
 								<div class="flex items-center gap-0.5">
 									{#each row.child.mounts as mount (mount.type)}
-										<img
-											src="/icons/mounts/{mount.type.toLowerCase()}.svg"
-											alt={mount.type}
-											class="size-5 cursor-pointer"
-											onclick={() => toggleMount(mount.type)}
-										/>
+										<button type="button" class="cursor-pointer" onclick={() => toggleMount(mount.type)}>
+											<img
+												src="/icons/mounts/{mount.type.toLowerCase()}.svg"
+												alt={mount.type}
+												class="size-5"
+											/>
+										</button>
 									{/each}
 									<span class="text-muted-foreground">{row.child.mounts[0].unlockLevel}</span>
 								</div>

@@ -183,12 +183,13 @@
 								<span class="text-muted-foreground">#{pair.parent1.number}</span>
 								<span>{pair.parent1.name}</span>
 								{#each pair.parent1.elements as el (el)}
-									<img
-										src="/icons/elements/{el.toLowerCase()}.webp"
-										alt={el}
-										class="size-5 cursor-pointer"
-										onclick={() => toggleElement(el)}
-									/>
+									<button type="button" class="cursor-pointer" onclick={() => toggleElement(el)}>
+										<img
+											src="/icons/elements/{el.toLowerCase()}.webp"
+											alt={el}
+											class="size-5"
+										/>
+									</button>
 								{/each}
 							</div>
 						</Table.Cell>
@@ -197,12 +198,13 @@
 								<span class="text-muted-foreground">#{pair.parent2.number}</span>
 								<span>{pair.parent2.name}</span>
 								{#each pair.parent2.elements as el (el)}
-									<img
-										src="/icons/elements/{el.toLowerCase()}.webp"
-										alt={el}
-										class="size-5 cursor-pointer"
-										onclick={() => toggleElement(el)}
-									/>
+									<button type="button" class="cursor-pointer" onclick={() => toggleElement(el)}>
+										<img
+											src="/icons/elements/{el.toLowerCase()}.webp"
+											alt={el}
+											class="size-5"
+										/>
+									</button>
 								{/each}
 							</div>
 						</Table.Cell>
