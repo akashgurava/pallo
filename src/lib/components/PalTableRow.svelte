@@ -6,6 +6,7 @@
 	import type { PalRow } from '$lib/types.js';
 	import type { WorkTypeFilter } from '$lib/filters.js';
 
+
 	let {
 		pal,
 		workTypeFilter,
@@ -28,7 +29,7 @@
 	<Table.Cell class="px-1 font-medium">
 		<div class="flex items-center gap-0.5">
 			<span class="whitespace-nowrap">{pal.name}</span>
-			{#each pal.elements as element}
+			{#each pal.elements as element (element)}
 				<ElementIcon
 					name={element}
 					size="size-4"
@@ -40,7 +41,7 @@
 	</Table.Cell>
 	<Table.Cell class="px-1">
 		<div class="flex flex-wrap gap-0.5">
-			{#each pal.workSuitabilities as ws}
+			{#each pal.workSuitabilities as ws (ws.workType)}
 				<button
 					onclick={() => onSetWorkTypeLevel(ws.workType, (workTypeFilter.get(ws.workType) ?? 0) > 0 ? 0 : 1)}
 					class="flex cursor-pointer items-center rounded bg-neutral-800/60 px-0.5"
@@ -57,7 +58,7 @@
 	<Table.Cell class="px-1">
 		{#if pal.mounts.length > 0}
 			<div class="flex items-center gap-0.5">
-				{#each pal.mounts as mount}
+				{#each pal.mounts as mount (mount.type)}
 					<MountIcon type={mount.type} size="size-4" onclick={() => onToggleMountType(mount.type)} />
 				{/each}
 				<span class="text-muted-foreground">{pal.mounts[0]?.unlockLevel}</span>

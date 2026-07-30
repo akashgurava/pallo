@@ -130,7 +130,7 @@
 			<LogicToggle value={elementLogic} onchange={onSetElementLogic} />
 		</div>
 		<div class="flex flex-wrap gap-1">
-			{#each elements as element}
+			{#each elements as element (element.name)}
 				<ElementIcon
 					name={element.name}
 					active={selectedElements.has(element.name)}
@@ -149,7 +149,7 @@
 			<LogicToggle value={workTypeLogic} onchange={onSetWorkTypeLogic} />
 		</div>
 		<div class="grid grid-cols-4 gap-2">
-			{#each workTypes as wt}
+			{#each workTypes as wt (wt.name)}
 				{@const level = workTypeFilter.get(wt.name) ?? 0}
 				<div
 					class="flex items-center gap-0.5 rounded border px-1.5 py-1.5 {level > 0
@@ -169,7 +169,7 @@
 						onchange={(e) => onSetWorkTypeLevel(wt.name, parseInt(e.currentTarget.value, 10))}
 					>
 						<option value="0">-</option>
-						{#each Array.from({ length: 10 }, (_, i) => i + 1) as lvl}
+						{#each Array.from({ length: 10 }, (_, i) => i + 1) as lvl (lvl)}
 							<option value={lvl}>{lvl}</option>
 						{/each}
 					</select>
@@ -191,12 +191,12 @@
 					onchange={(e) => onSetMountMaxLevel(parseInt(e.currentTarget.value, 10))}
 				>
 					<option value="0">-</option>
-					{#each Array.from({ length: 15 }, (_, i) => 80 - i * 5) as lvl}
+					{#each Array.from({ length: 15 }, (_, i) => 80 - i * 5) as lvl (lvl)}
 						<option value={lvl}>{lvl}</option>
 					{/each}
 				</select>
 			</div>
-			{#each MOUNT_TYPES as mt}
+			{#each MOUNT_TYPES as mt (mt)}
 				{@const active = mountFilter.types.has(mt)}
 				<button
 					onclick={() => onToggleMountType(mt)}
@@ -230,7 +230,7 @@
 			</button>
 		</div>
 		<div class="space-y-2">
-			{#each statFilters as sf, i}
+			{#each statFilters as sf, i (i)}
 				{@const colDef = STAT_COLUMNS.find((c) => c.key === sf.column) ?? STAT_COLUMNS[0]!}
 				<div class="flex items-center gap-1">
 					<select
@@ -242,7 +242,7 @@
 							onUpdateStatFilter(i, { column: newCol, op: sf.op, value: newDef.values[0]! });
 						}}
 					>
-						{#each STAT_COLUMNS as col}
+						{#each STAT_COLUMNS as col (col.key)}
 							<option value={col.key}>{col.label}</option>
 						{/each}
 					</select>
@@ -259,7 +259,7 @@
 						value={sf.value}
 						onchange={(e) => onUpdateStatFilter(i, { ...sf, value: parseInt(e.currentTarget.value, 10) })}
 					>
-						{#each colDef.values as v}
+						{#each colDef.values as v (v)}
 							<option value={v}>{v}</option>
 						{/each}
 					</select>

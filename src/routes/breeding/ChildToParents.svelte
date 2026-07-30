@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import PalAutocomplete from '$lib/components/PalAutocomplete.svelte';
 	import ElementIcon from '$lib/components/ElementIcon.svelte';
@@ -40,7 +41,7 @@
 	}
 
 	function toggleElement(name: string): void {
-		const next = new Set(reverseElementFilter);
+		const next = new SvelteSet(reverseElementFilter);
 		if (next.has(name)) next.delete(name); else next.add(name);
 		reverseElementFilter = next;
 	}
@@ -78,7 +79,7 @@
 	});
 
 	let reverseParentOptions = $derived.by(() => {
-		const seen = new Set<number>();
+		const seen = new SvelteSet<number>();
 		const options: PalRow[] = [];
 		for (const pair of parentPairs) {
 			for (const p of [pair.parent1, pair.parent2]) {
@@ -138,7 +139,7 @@
 
 	<!-- Element filters -->
 	<div class="flex flex-wrap items-center gap-1.5">
-		{#each availableElements as el}
+		{#each availableElements as el (el)}
 			<ElementIcon
 				name={el}
 				size="size-7"
@@ -181,7 +182,7 @@
 							<div class="flex items-center gap-1.5">
 								<span class="text-muted-foreground">#{pair.parent1.number}</span>
 								<span>{pair.parent1.name}</span>
-								{#each pair.parent1.elements as el}
+								{#each pair.parent1.elements as el (el)}
 									<img
 										src="/icons/elements/{el.toLowerCase()}.webp"
 										alt={el}
@@ -195,7 +196,7 @@
 							<div class="flex items-center gap-1.5">
 								<span class="text-muted-foreground">#{pair.parent2.number}</span>
 								<span>{pair.parent2.name}</span>
-								{#each pair.parent2.elements as el}
+								{#each pair.parent2.elements as el (el)}
 									<img
 										src="/icons/elements/{el.toLowerCase()}.webp"
 										alt={el}

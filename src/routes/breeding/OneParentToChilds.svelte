@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import PalAutocomplete from '$lib/components/PalAutocomplete.svelte';
 	import ElementIcon from '$lib/components/ElementIcon.svelte';
@@ -47,7 +48,7 @@
 	let lookingUpAll = $state(false);
 
 	let childOptions = $derived.by(() => {
-		const seen = new Set<number>();
+		const seen = new SvelteSet<number>();
 		const options: PalRow[] = [];
 		for (const row of allResults) {
 			if (!seen.has(row.child.id)) {
@@ -102,19 +103,19 @@
 	}
 
 	function toggleElement(name: string): void {
-		const next = new Set(selectedElements);
+		const next = new SvelteSet(selectedElements);
 		if (next.has(name)) next.delete(name); else next.add(name);
 		selectedElements = next;
 	}
 
 	function toggleWorkType(name: string): void {
-		const next = new Set(selectedWorkTypes);
+		const next = new SvelteSet(selectedWorkTypes);
 		if (next.has(name)) next.delete(name); else next.add(name);
 		selectedWorkTypes = next;
 	}
 
 	function toggleMount(type: string): void {
-		const next = new Set(selectedMounts);
+		const next = new SvelteSet(selectedMounts);
 		if (next.has(type)) next.delete(type); else next.add(type);
 		selectedMounts = next;
 	}
@@ -204,7 +205,7 @@
 
 	<!-- Filters -->
 	<div class="flex flex-wrap items-center gap-1.5">
-		{#each availableElements as el}
+		{#each availableElements as el (el)}
 			<ElementIcon
 				name={el}
 				size="size-7"
@@ -213,7 +214,7 @@
 			/>
 		{/each}
 		<span class="mx-2 h-6 w-px bg-neutral-700"></span>
-		{#each availableWorkTypes as wt}
+		{#each availableWorkTypes as wt (wt)}
 			<button
 				onclick={() => toggleWorkType(wt)}
 				class="rounded p-1.5 transition-colors {selectedWorkTypes.has(wt) ? 'bg-primary/30 ring-1 ring-primary' : 'hover:bg-muted'}"
@@ -223,7 +224,7 @@
 			</button>
 		{/each}
 		<span class="mx-2 h-6 w-px bg-neutral-700"></span>
-		{#each mountTypes as mt}
+		{#each mountTypes as mt (mt)}
 			<button
 				onclick={() => toggleMount(mt)}
 				class="rounded p-1.5 transition-colors {selectedMounts.has(mt) ? 'bg-primary/30 ring-1 ring-primary' : 'hover:bg-muted'}"
@@ -302,7 +303,7 @@
 							<div class="flex items-center gap-1.5">
 								<span class="text-muted-foreground">#{row.parent.number}</span>
 								<span>{row.parent.name}</span>
-								{#each row.parent.elements as el}
+								{#each row.parent.elements as el (el)}
 									<img
 										src="/icons/elements/{el.toLowerCase()}.webp"
 										alt={el}
@@ -316,7 +317,7 @@
 							<div class="flex items-center gap-1.5">
 								<span class="text-muted-foreground">#{row.child.number}</span>
 								<span class="font-medium">{row.child.name}</span>
-								{#each row.child.elements as el}
+								{#each row.child.elements as el (el)}
 									<img
 										src="/icons/elements/{el.toLowerCase()}.webp"
 										alt={el}
@@ -328,7 +329,7 @@
 						</Table.Cell>
 						<Table.Cell>
 							<div class="flex items-center gap-1">
-								{#each row.child.workSuitabilities as work}
+								{#each row.child.workSuitabilities as work (work.workType)}
 									<button
 										class="flex cursor-pointer items-center"
 										title="{work.workType} Lv{work.level}"
@@ -347,7 +348,7 @@
 						<Table.Cell>
 							{#if row.child.mounts.length > 0}
 								<div class="flex items-center gap-0.5">
-									{#each row.child.mounts as mount}
+									{#each row.child.mounts as mount (mount.type)}
 										<img
 											src="/icons/mounts/{mount.type.toLowerCase()}.svg"
 											alt={mount.type}

@@ -88,7 +88,7 @@
 				<div class="flex flex-wrap items-center gap-3">
 					<span class="text-sm text-muted-foreground">#{child.number}</span>
 					<span class="text-xl font-bold">{child.name}</span>
-					{#each child.elements as el}
+					{#each child.elements as el (el)}
 						<img
 							src="/icons/elements/{el.toLowerCase()}.webp"
 							alt={el}
@@ -96,7 +96,7 @@
 						/>
 					{/each}
 					<span class="w-4"></span>
-					{#each child.workSuitabilities as work}
+					{#each child.workSuitabilities as work (work.workType)}
 						<div class="flex items-center gap-0.5" title="{work.workType} Lv{work.level}">
 							<img
 								src="/icons/work/{work.workType.toLowerCase().replace(/ /g, '-')}.webp"
@@ -108,7 +108,7 @@
 					{/each}
 					{#if child.mounts.length > 0}
 						<span class="ml-auto flex items-center gap-2">
-							{#each child.mounts as mount}
+							{#each child.mounts as mount (mount.type)}
 								<span class="flex items-center gap-0.5">
 									<img
 										src="/icons/mounts/{mount.type.toLowerCase()}.svg"

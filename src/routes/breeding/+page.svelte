@@ -85,7 +85,16 @@
 	let pendingChildFilterId = $state<number | null>(null);
 
 	$effect(() => {
-		parentA; parentB; singleParent; childFilter; reverseChild; selectedElements; selectedWorkTypes; selectedMounts; reverseElementFilter; activeTab;
+		void parentA;
+		void parentB;
+		void singleParent;
+		void childFilter;
+		void reverseChild;
+		void selectedElements;
+		void selectedWorkTypes;
+		void selectedMounts;
+		void reverseElementFilter;
+		void activeTab;
 		if (!loading) saveState();
 	});
 

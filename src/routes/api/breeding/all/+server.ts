@@ -11,7 +11,7 @@ import {
 	palStats,
 	palMovement
 } from '$lib/server/db/schema.js';
-import { and, asc, eq, or } from 'drizzle-orm';
+import { asc, eq, or } from 'drizzle-orm';
 import { createLogger } from '$lib/server/logger.js';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';

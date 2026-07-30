@@ -6,9 +6,9 @@
 	import FilterSidebar from '$lib/components/FilterSidebar.svelte';
 	import SortableHead from '$lib/components/SortableHead.svelte';
 	import PalTableRow from '$lib/components/PalTableRow.svelte';
+	import { SvelteSet, SvelteMap } from 'svelte/reactivity';
 	import {
 		filterPals,
-		STAT_COLUMNS,
 		type FilterLogic,
 		type WorkTypeFilter,
 		type ElementFilter,
@@ -72,7 +72,7 @@
 
 	// Filter actions
 	function toggleElement(name: string): void {
-		const next = new Set(selectedElements);
+		const next = new SvelteSet(selectedElements);
 		if (next.has(name)) {
 			next.delete(name);
 		} else {
@@ -82,7 +82,7 @@
 	}
 
 	function setWorkTypeLevel(name: string, level: number): void {
-		const next = new Map(workTypeFilter);
+		const next = new SvelteMap(workTypeFilter);
 		if (level === 0) {
 			next.delete(name);
 		} else {
@@ -92,7 +92,7 @@
 	}
 
 	function toggleMountType(type: string): void {
-		const next = new Set(mountFilter.types);
+		const next = new SvelteSet(mountFilter.types);
 		if (next.has(type)) {
 			next.delete(type);
 		} else {
@@ -248,7 +248,7 @@
 					<Table.Root class="text-xs">
 						<Table.Header>
 							<Table.Row>
-								{#each columns as col}
+								{#each columns as col (col.key)}
 									<SortableHead
 										key={col.key}
 										label={col.label}
