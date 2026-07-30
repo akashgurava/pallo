@@ -13,18 +13,6 @@ export default ts.config(
     settings: {
       tailwindcss: {
         cssConfigPath: "src/app.css",
-        classnames: ["class", "className"],
-        callees: ["cn"],
-        entrypoint: "src/app.css",
-        cssFiles: ["src/app.css"],
-      },
-    },
-  },
-  {
-    files: ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
-    languageOptions: {
-      parserOptions: {
-        parser: ts.parser,
       },
     },
   },
@@ -37,10 +25,11 @@ export default ts.config(
     },
   },
   {
-    rules: {
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/no-explicit-any": "error",
-      "svelte/no-navigation-without-resolve": "off",
+    files: ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
+    languageOptions: {
+      parserOptions: {
+        parser: ts.parser,
+      },
     },
   },
   {

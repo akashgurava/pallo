@@ -22,8 +22,6 @@
     reverseElementFilter: Set<string>;
   } = $props();
 
-  let parentPairs = $state<ParentPair[]>([]);
-  let lookingUpParents = $state(false);
   let reverseParentFilter = $state<PalRow | null>(null);
 
   type SortKey = "parent1" | "parent2";
@@ -47,37 +45,14 @@
     reverseElementFilter = next;
   }
 
-  async function lookupParents(): Promise<void> {
-    if (!reverseChild) {
-      parentPairs = [];
-      return;
-    }
-    lookingUpParents = true;
-    try {
-      const res = await fetch(`/api/breeding/parents?child=${reverseChild.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        parentPairs = data.results ?? [];
-      } else {
-        parentPairs = [];
-      }
-    } catch (err) {
-      console.error("Parents lookup failed:", err);
-      parentPairs = [];
-    } finally {
-      lookingUpParents = false;
-    }
-  }
-
-  $effect(() => {
-    if (reverseChild) {
-      lookupParents();
-      reverseParentFilter = null;
-    } else {
-      parentPairs = [];
-      reverseParentFilter = null;
-    }
-  });
+  let parentPairs = $derived<ParentPair[]>(
+    reverseChild
+      ? await fetch(`/api/breeding/parents?child=${reverseChild.id}`)
+          .then((r) => (r.ok ? r.json() : { results: [] }))
+          .then((d) => d.results ?? [])
+          .catch(() => [])
+      : [],
+  );
 
   let reverseParentOptions = $derived.by(() => {
     const seen = new SvelteSet<number>();
@@ -128,7 +103,7 @@
         {pals}
         selected={reverseChild}
         placeholder="Search child..."
-        onSelect={(pal) => (reverseChild = pal)}
+        onSelect={(pal) => { reverseChild = pal; reverseParentFilter = null; }}
       />
     </div>
     <div>
@@ -154,7 +129,7 @@
     {/each}
   </div>
 
-  {#if lookingUpParents}
+  {#if $effect.pending()}
     <div class="text-muted-foreground text-sm">Looking up...</div>
   {:else if parentPairs.length > 0}
     <div class="text-muted-foreground text-sm">

@@ -50,8 +50,14 @@
 
   const mountTypes = ["Ground", "Flying", "Water"];
 
-  let allResults = $state<BreedingAllResult[]>([]);
-  let lookingUpAll = $state(false);
+  let allResults = $derived<BreedingAllResult[]>(
+    singleParent
+      ? await fetch(`/api/breeding/all?parent=${singleParent.id}`)
+          .then((r) => (r.ok ? r.json() : { results: [] }))
+          .then((d) => d.results ?? [])
+          .catch(() => [])
+      : [],
+  );
 
   let childOptions = $derived.by(() => {
     const seen = new SvelteSet<number>();
@@ -110,6 +116,11 @@
       case "child":
         return parseInt(row.child.number) || 0;
       case "work":
+        if (selectedWorkTypes.size > 0) {
+          return row.child.workSuitabilities
+            .filter((w) => selectedWorkTypes.has(w.workType))
+            .reduce((sum, w) => sum + w.level, 0);
+        }
         return row.child.workSuitabilities.reduce((sum, w) => sum + w.level, 0);
       case "mount":
         return row.child.mounts.length > 0 ? (row.child.mounts[0]?.unlockLevel ?? 9999) : 9999;
@@ -189,41 +200,6 @@
     }),
   );
 
-  async function lookupAll(): Promise<void> {
-    if (!singleParent) {
-      allResults = [];
-      return;
-    }
-    lookingUpAll = true;
-    try {
-      const res = await fetch(`/api/breeding/all?parent=${singleParent.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        allResults = data.results ?? [];
-      } else {
-        allResults = [];
-      }
-    } catch (err) {
-      console.error("Breeding all lookup failed:", err);
-      allResults = [];
-    } finally {
-      lookingUpAll = false;
-    }
-  }
-
-  let prevSingleParentId = $state<number | null>(null);
-  $effect(() => {
-    if (singleParent) {
-      const changed = prevSingleParentId !== null && prevSingleParentId !== singleParent.id;
-      prevSingleParentId = singleParent.id;
-      lookupAll();
-      if (changed) childFilter = null;
-    } else {
-      prevSingleParentId = null;
-      allResults = [];
-      childFilter = null;
-    }
-  });
 </script>
 
 <div class="space-y-4">
@@ -234,7 +210,7 @@
         {pals}
         selected={singleParent}
         placeholder="Search parent..."
-        onSelect={(pal) => (singleParent = pal)}
+        onSelect={(pal) => { singleParent = pal; childFilter = null; }}
       />
     </div>
     <div>
@@ -284,7 +260,7 @@
     {/each}
   </div>
 
-  {#if lookingUpAll}
+  {#if $effect.pending()}
     <div class="text-muted-foreground text-sm">Looking up...</div>
   {:else if allResults.length > 0}
     <div class="text-muted-foreground text-sm">
@@ -295,26 +271,26 @@
   {/if}
 
   <div class="overflow-x-auto rounded-md border border-neutral-800">
-    <Table.Root class="w-[1400px] table-fixed text-sm">
+    <Table.Root class="w-350 table-fixed text-sm">
       <colgroup>
-        <col class="w-[180px]" /><!-- Parent B -->
-        <col class="w-[180px]" /><!-- Child -->
-        <col class="w-[200px]" /><!-- Work -->
-        <col class="w-[100px]" /><!-- Mount -->
-        <col class="w-[45px]" /><!-- Rar -->
-        <col class="w-[45px]" /><!-- Slow -->
-        <col class="w-[45px]" /><!-- Walk -->
-        <col class="w-[45px]" /><!-- Run -->
-        <col class="w-[50px]" /><!-- Sprint -->
-        <col class="w-[45px]" /><!-- TPot -->
-        <col class="w-[45px]" /><!-- Swim -->
-        <col class="w-[45px]" /><!-- Dash -->
-        <col class="w-[45px]" /><!-- Stam -->
-        <col class="w-[40px]" /><!-- HP -->
-        <col class="w-[40px]" /><!-- ATK -->
-        <col class="w-[40px]" /><!-- DEF -->
-        <col class="w-[45px]" /><!-- Food -->
-        <col class="w-[45px]" /><!-- Coin -->
+        <col class="w-45" /><!-- Parent B -->
+        <col class="w-45" /><!-- Child -->
+        <col class="w-50" /><!-- Work -->
+        <col class="w-25" /><!-- Mount -->
+        <col class="w-11.25" /><!-- Rar -->
+        <col class="w-11.25" /><!-- Slow -->
+        <col class="w-11.25" /><!-- Walk -->
+        <col class="w-11.25" /><!-- Run -->
+        <col class="w-12.5" /><!-- Sprint -->
+        <col class="w-11.25" /><!-- TPot -->
+        <col class="w-11.25" /><!-- Swim -->
+        <col class="w-11.25" /><!-- Dash -->
+        <col class="w-11.25" /><!-- Stam -->
+        <col class="w-10" /><!-- HP -->
+        <col class="w-10" /><!-- ATK -->
+        <col class="w-10" /><!-- DEF -->
+        <col class="w-11.25" /><!-- Food -->
+        <col class="w-11.25" /><!-- Coin -->
       </colgroup>
       <Table.Header>
         <Table.Row>

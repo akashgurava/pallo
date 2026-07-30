@@ -30,38 +30,14 @@
     parentB: PalRow | null;
   } = $props();
 
-  let child = $state<BreedingChild | null>(null);
-  let lookingUp = $state(false);
-
-  async function lookupChild(): Promise<void> {
-    if (!parentA || !parentB) {
-      child = null;
-      return;
-    }
-    lookingUp = true;
-    try {
-      const res = await fetch(`/api/breeding?parent1=${parentA.id}&parent2=${parentB.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        child = data.child ?? null;
-      } else {
-        child = null;
-      }
-    } catch (err) {
-      console.error("Breeding lookup failed:", err);
-      child = null;
-    } finally {
-      lookingUp = false;
-    }
-  }
-
-  $effect(() => {
-    if (parentA && parentB) {
-      lookupChild();
-    } else {
-      child = null;
-    }
-  });
+  let child = $derived<BreedingChild | null>(
+    parentA && parentB
+      ? await fetch(`/api/breeding?parent1=${parentA.id}&parent2=${parentB.id}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => d?.child ?? null)
+          .catch(() => null)
+      : null,
+  );
 </script>
 
 <div class="w-176 space-y-4">
@@ -87,7 +63,7 @@
   </div>
 
   <div class="rounded-md border border-neutral-700 bg-neutral-900 p-4">
-    {#if lookingUp}
+    {#if $effect.pending()}
       <div class="text-muted-foreground text-sm">Looking up...</div>
     {:else if child}
       <div class="space-y-3">

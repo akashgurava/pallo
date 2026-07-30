@@ -8,14 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && npx @laststance/tailwind-suggest-canonical-classes --check \"src/**/*.{astro,css,html,js,jsx,md,mdx,ts,tsx,vue,svelte}\"",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "scrape": "tsx src/lib/server/scraper/index.ts",
     "scrape:details": "tsx src/lib/server/scraper/scrape-details.ts",
     "db:push": "drizzle-kit push",
     "db:reset": "rm -f pallo.db && drizzle-kit push",
     "lint": "eslint .",
-    "format": "npx @tailwindcss/upgrade --force && prettier --write .",
+    "format": "npx @laststance/tailwind-suggest-canonical-classes \"src/**/*.{astro,css,html,js,jsx,md,mdx,ts,tsx,vue,svelte}\" && prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
