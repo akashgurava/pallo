@@ -1,11 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import * as Table from "$lib/components/ui/table/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import FilterSidebar from "$lib/components/FilterSidebar.svelte";
-  import SortableHead from "$lib/components/SortableHead.svelte";
-  import PalTableRow from "$lib/components/PalTableRow.svelte";
+  import PalTable from "$lib/components/PalTable.svelte";
   import { SvelteSet, SvelteMap } from "svelte/reactivity";
   import {
     filterPals,
@@ -183,27 +181,6 @@
     onClear: clearFilters,
   });
 
-  const columns: { key: SortKey; label: string; width: string }[] = [
-    { key: "id", label: "#", width: "w-12" },
-    { key: "name", label: "Name", width: "w-28" },
-    { key: "work", label: "Work", width: "w-36" },
-    { key: "size", label: "Size", width: "w-10" },
-    { key: "rarity", label: "Rar", width: "w-8" },
-    { key: "mounts", label: "Mount", width: "w-14" },
-    { key: "slow", label: "Slow", width: "w-8" },
-    { key: "walk", label: "Walk", width: "w-8" },
-    { key: "run", label: "Run", width: "w-8" },
-    { key: "sprint", label: "Sprint", width: "w-10" },
-    { key: "tpot", label: "TPot", width: "w-8" },
-    { key: "swim", label: "Swim", width: "w-8" },
-    { key: "dash", label: "Dash", width: "w-8" },
-    { key: "stam", label: "Stam", width: "w-8" },
-    { key: "hp", label: "HP", width: "w-8" },
-    { key: "atk", label: "ATK", width: "w-8" },
-    { key: "def", label: "DEF", width: "w-8" },
-    { key: "food", label: "Food", width: "w-8" },
-    { key: "price", label: "Coin", width: "w-10" },
-  ];
 </script>
 
 <div class="flex h-full">
@@ -244,35 +221,16 @@
         <div class="text-muted-foreground mb-2 text-sm">
           {sorted.length}/{palsList.length} pals
         </div>
-        <div class="overflow-x-auto rounded-md border border-neutral-800">
-          <Table.Root class="text-xs">
-            <Table.Header>
-              <Table.Row>
-                {#each columns as col (col.key)}
-                  <SortableHead
-                    key={col.key}
-                    label={col.label}
-                    {sortKey}
-                    {sortDir}
-                    width={col.width}
-                    onclick={() => toggleSort(col.key)}
-                  />
-                {/each}
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {#each sorted as pal (pal.id)}
-                <PalTableRow
-                  {pal}
-                  {workTypeFilter}
-                  onToggleElement={toggleElement}
-                  onSetWorkTypeLevel={setWorkTypeLevel}
-                  onToggleMountType={toggleMountType}
-                />
-              {/each}
-            </Table.Body>
-          </Table.Root>
-        </div>
+        <PalTable
+          pals={sorted}
+          {sortKey}
+          {sortDir}
+          {workTypeFilter}
+          onToggleSort={toggleSort}
+          onToggleElement={toggleElement}
+          onSetWorkTypeLevel={setWorkTypeLevel}
+          onToggleMountType={toggleMountType}
+        />
         <div class="pb-4"></div>
       {/if}
     </div>

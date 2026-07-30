@@ -14,15 +14,15 @@
     pals,
     availableElements,
     reverseChild = $bindable(),
+    reverseParentFilter = $bindable(),
     reverseElementFilter = $bindable(),
   }: {
     pals: PalRow[];
     availableElements: string[];
     reverseChild: PalRow | null;
+    reverseParentFilter: PalRow | null;
     reverseElementFilter: Set<string>;
   } = $props();
-
-  let reverseParentFilter = $state<PalRow | null>(null);
 
   type SortKey = "parent1" | "parent2";
   type SortDir = "asc" | "desc";
@@ -45,14 +45,24 @@
     reverseElementFilter = next;
   }
 
-  let parentPairs = $derived<ParentPair[]>(
-    reverseChild
-      ? await fetch(`/api/breeding/parents?child=${reverseChild.id}`)
-          .then((r) => (r.ok ? r.json() : { results: [] }))
-          .then((d) => d.results ?? [])
-          .catch(() => [])
-      : [],
-  );
+  let parentPairs = $state<ParentPair[]>([]);
+
+  $effect(() => {
+    if (!reverseChild) {
+      parentPairs = [];
+      return;
+    }
+    const controller = new AbortController();
+    fetch(`/api/breeding/parents?child=${reverseChild.id}`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : { results: [] }))
+      .then((d) => {
+        parentPairs = d.results ?? [];
+      })
+      .catch((e) => {
+        if (e.name !== "AbortError") parentPairs = [];
+      });
+    return () => controller.abort();
+  });
 
   let reverseParentOptions = $derived.by(() => {
     const seen = new SvelteSet<number>();
@@ -93,6 +103,17 @@
       return sortDir === "asc" ? aVal - bVal : bVal - aVal;
     }),
   );
+  let lastReverseChildId: number | null = reverseChild?.id ?? null;
+
+  $effect.pre(() => {
+    const currentId = reverseChild?.id ?? null;
+    if (lastReverseChildId !== currentId) {
+      if (lastReverseChildId !== null) {
+        reverseParentFilter = null;
+      }
+      lastReverseChildId = currentId;
+    }
+  });
 </script>
 
 <div class="w-3xl space-y-4">
@@ -103,7 +124,7 @@
         {pals}
         selected={reverseChild}
         placeholder="Search child..."
-        onSelect={(pal) => { reverseChild = pal; reverseParentFilter = null; }}
+        onSelect={(pal) => { reverseChild = pal; }}
       />
     </div>
     <div>

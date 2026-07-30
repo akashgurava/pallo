@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Table from "$lib/components/ui/table/index.js";
   import type { SortKey, SortDir } from "$lib/sorting.js";
 
   let {
@@ -20,9 +21,9 @@
   let indicator = $derived(sortKey === key ? (sortDir === "asc" ? " \u25B2" : " \u25BC") : "");
 </script>
 
-<th
+<Table.Head
   class="{width} text-muted-foreground cursor-pointer px-1 text-center text-xs font-medium select-none"
   {onclick}
 >
   {label}{indicator}
-</th>
+</Table.Head>

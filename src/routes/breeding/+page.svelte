@@ -18,7 +18,7 @@
       if (res.ok) {
         palsList = await res.json();
         breedingState.restore(palsList);
-        breedingState.restoreChildFilter(palsList);
+        breedingState.restoreDependentFilters(palsList);
       }
     } catch (err) {
       console.error("Failed to fetch pals:", err);
@@ -81,6 +81,7 @@
           {availableElements}
           {availableWorkTypes}
           bind:singleParent={breedingState.singleParent}
+          bind:parentBFilter={breedingState.parentBFilter}
           bind:childFilter={breedingState.childFilter}
           bind:selectedElements={breedingState.selectedElements}
           bind:selectedWorkTypes={breedingState.selectedWorkTypes}
@@ -95,6 +96,7 @@
           pals={palsList}
           {availableElements}
           bind:reverseChild={breedingState.reverseChild}
+          bind:reverseParentFilter={breedingState.reverseParentFilter}
           bind:reverseElementFilter={breedingState.reverseElementFilter}
         />
       {/if}

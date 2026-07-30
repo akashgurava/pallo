@@ -30,14 +30,24 @@
     parentB: PalRow | null;
   } = $props();
 
-  let child = $derived<BreedingChild | null>(
-    parentA && parentB
-      ? await fetch(`/api/breeding?parent1=${parentA.id}&parent2=${parentB.id}`)
-          .then((r) => (r.ok ? r.json() : null))
-          .then((d) => d?.child ?? null)
-          .catch(() => null)
-      : null,
-  );
+  let child = $state<BreedingChild | null>(null);
+
+  $effect(() => {
+    if (!parentA || !parentB) {
+      child = null;
+      return;
+    }
+    const controller = new AbortController();
+    fetch(`/api/breeding?parent1=${parentA.id}&parent2=${parentB.id}`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        child = d?.child ?? null;
+      })
+      .catch((e) => {
+        if (e.name !== "AbortError") child = null;
+      });
+    return () => controller.abort();
+  });
 </script>
 
 <div class="w-176 space-y-4">

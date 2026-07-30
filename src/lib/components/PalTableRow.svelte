@@ -22,12 +22,10 @@
 </script>
 
 <Table.Row>
-  <Table.Cell class="text-muted-foreground px-1 font-mono">
-    {pal.number}{pal.variant ?? ""}
-  </Table.Cell>
-  <Table.Cell class="px-1 font-medium">
-    <div class="flex items-center gap-0.5">
-      <span class="whitespace-nowrap">{pal.name}</span>
+  <Table.Cell class="px-3">
+    <div class="flex items-center gap-1">
+      <span class="text-muted-foreground font-mono text-xs">{pal.number}{pal.variant ?? ""}</span>
+      <span class="whitespace-nowrap text-sm font-medium">{pal.name}</span>
       {#each pal.elements as element (element)}
         <ElementIcon
           name={element}
