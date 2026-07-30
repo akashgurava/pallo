@@ -120,7 +120,7 @@
   );
 </script>
 
-<div class="w-[48rem] space-y-4">
+<div class="w-3xl space-y-4">
   <div class="flex gap-4">
     <div>
       <span class="text-muted-foreground mb-1 block text-sm">Child</span>

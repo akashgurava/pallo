@@ -15,7 +15,7 @@
     "db:push": "drizzle-kit push",
     "db:reset": "rm -f pallo.db && drizzle-kit push",
     "lint": "eslint .",
-    "format": "prettier --write .",
+    "format": "npx @tailwindcss/upgrade --force && prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {

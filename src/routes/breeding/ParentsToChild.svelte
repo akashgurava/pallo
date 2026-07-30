@@ -64,7 +64,7 @@
   });
 </script>
 
-<div class="w-[44rem] space-y-4">
+<div class="w-176 space-y-4">
   <div class="flex gap-4">
     <div>
       <span class="text-muted-foreground mb-1 block text-sm">Parent A</span>

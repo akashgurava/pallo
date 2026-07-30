@@ -143,7 +143,7 @@
   });
 </script>
 
-<div class="mx-auto flex h-full max-w-[90rem] flex-col px-6 pt-8">
+<div class="mx-auto flex h-full max-w-360 flex-col px-6 pt-8">
   <Tabs.Root bind:value={activeTab}>
     <div class="flex justify-center">
       <Tabs.List>
