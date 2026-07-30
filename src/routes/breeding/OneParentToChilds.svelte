@@ -112,7 +112,7 @@
       case "work":
         return row.child.workSuitabilities.reduce((sum, w) => sum + w.level, 0);
       case "mount":
-        return row.child.mounts.length > 0 ? row.child.mounts[0].unlockLevel : 9999;
+        return row.child.mounts.length > 0 ? (row.child.mounts[0]?.unlockLevel ?? 9999) : 9999;
       case "rarity":
         return row.child.stats?.rarity ?? 0;
       case "slow":
@@ -387,7 +387,7 @@
                       />
                     </button>
                   {/each}
-                  <span class="text-muted-foreground">{row.child.mounts[0].unlockLevel}</span>
+                  <span class="text-muted-foreground">{row.child.mounts[0]?.unlockLevel}</span>
                 </div>
               {/if}
             </Table.Cell>
