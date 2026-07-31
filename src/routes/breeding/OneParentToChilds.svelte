@@ -277,5 +277,36 @@
     onToggleElement={toggleElement}
     onSetWorkTypeLevel={setWorkTypeLevel}
     onToggleMountType={toggleMount}
-  />
+  >
+    {#snippet expandedRow(childPal)}
+      {@const parentBFullPals = allResults
+        .filter((r) => r.child.id === childPal.id)
+        .map((r) => pals.find((p) => p.id === r.parent.id))
+        .filter((p): p is PalRow => p !== undefined)}
+      {@const parentBList = sortPals(parentBFullPals, sortKey, sortDir, workTypeFilterMap, "or")}
+      <div class="max-w-full overflow-x-auto px-2 py-1">
+        <div class="flex flex-nowrap items-center gap-1.5 py-0.5">
+          {#each parentBList as parentB (parentB.id)}
+            <div class="flex shrink-0 items-center gap-1.5 rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1 text-xs">
+              <span class="font-mono text-neutral-400">#{parentB.number}</span>
+              <span class="font-medium text-neutral-200">{parentB.name}</span>
+              <div class="flex items-center gap-0.5">
+                {#each parentB.elements as el (el)}
+                  <img src="/icons/elements/{el.toLowerCase()}.webp" alt={el} class="size-4" />
+                {/each}
+              </div>
+              {#if parentB.mounts.length > 0}
+                <div class="flex items-center gap-0.5 border-l border-neutral-800 pl-1">
+                  {#each parentB.mounts as mount (mount.type)}
+                    <img src="/icons/mounts/{mount.type.toLowerCase()}.svg" alt={mount.type} class="size-3.5" title="{mount.type} Mount" />
+                  {/each}
+                  <span class="text-neutral-400 text-[10px] font-semibold">{parentB.mounts[0]?.unlockLevel}</span>
+                </div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/snippet}
+  </PalTable>
 </div>

@@ -11,6 +11,7 @@
     sortKey,
     sortDir,
     workTypeFilter,
+    expandedRow,
     onToggleSort,
     onToggleElement,
     onSetWorkTypeLevel,
@@ -20,6 +21,7 @@
     sortKey: SortKey;
     sortDir: SortDir;
     workTypeFilter: WorkTypeFilter;
+    expandedRow?: import("svelte").Snippet<[PalRow]> | undefined;
     onToggleSort: (key: SortKey) => void;
     onToggleElement: (name: string) => void;
     onSetWorkTypeLevel: (name: string, level: number) => void;
@@ -69,6 +71,7 @@
         <PalTableRow
           {pal}
           {workTypeFilter}
+          {expandedRow}
           {onToggleElement}
           {onSetWorkTypeLevel}
           {onToggleMountType}
