@@ -25,11 +25,11 @@
   <Table.Cell class="px-3">
     <div class="flex items-center gap-1">
       <span class="text-muted-foreground font-mono text-xs">{pal.number}{pal.variant ?? ""}</span>
-      <span class="whitespace-nowrap text-sm font-medium">{pal.name}</span>
+      <span class="whitespace-nowrap px-1 text-sm font-semibold">{pal.name}</span>
       {#each pal.elements as element (element)}
         <ElementIcon
           name={element}
-          size="size-4"
+          size="size-5"
           active={false}
           onclick={() => onToggleElement(element)}
         />

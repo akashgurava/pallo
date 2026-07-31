@@ -14,7 +14,7 @@
 
 <button
   {onclick}
-  class="rounded p-1.5 transition-colors {active
+  class="rounded transition-colors {active
     ? 'bg-primary/30 ring-primary ring-1'
     : 'hover:bg-muted'}"
   title={name}
