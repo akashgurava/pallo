@@ -33,6 +33,15 @@
             Breeding
           </NavigationMenu.Link>
         </NavigationMenu.Item>
+        <NavigationMenu.Item>
+          <NavigationMenu.Link
+            href="/save-reader"
+            class="text-base"
+            data-active={page.url.pathname.startsWith("/save-reader")}
+          >
+            Save Reader
+          </NavigationMenu.Link>
+        </NavigationMenu.Item>
       </NavigationMenu.List>
     </NavigationMenu.Root>
   </div>

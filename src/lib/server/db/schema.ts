@@ -20,6 +20,25 @@ export const workTypes = sqliteTable("raw_work_types", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
+/** Passive skills scraped from paldb. */
+export const passiveSkills = sqliteTable("raw_passive_skills", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull().unique(),
+  description: text("description"),
+  rank: integer("rank").notNull().default(0),
+  isImplant: integer("is_implant", { mode: "boolean" }).notNull().default(false),
+  isWorldTree: integer("is_world_tree", { mode: "boolean" }).notNull().default(false),
+  isMutation: integer("is_mutation", { mode: "boolean" }).notNull().default(false),
+  isPalSurgeryTable: integer("is_pal_surgery_table", { mode: "boolean" }).notNull().default(false),
+  weight: integer("weight").notNull().default(0),
+  hp: integer("hp").notNull().default(0),
+  attack: integer("attack").notNull().default(0),
+  defense: integer("defense").notNull().default(0),
+  workSpeed: integer("work_speed").notNull().default(0),
+  movement: integer("movement").notNull().default(0),
+  san: integer("san").notNull().default(0),
+});
+
 /** Mount categories: Ground, Flying, Water. */
 export const mountTypes = sqliteTable("raw_mount_types", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -131,3 +150,20 @@ export const breedingCombos = sqliteTable(
   },
   (table) => [primaryKey({ columns: [table.parent1Id, table.parent2Id] })],
 );
+
+/** Extracted pals saved from user's Level.sav file. */
+export const userPals = sqliteTable("user_pals", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  palId: integer("pal_id")
+    .notNull()
+    .references(() => pals.id),
+  characterId: text("character_id").notNull(),
+  nickname: text("nickname"),
+  gender: text("gender").notNull().default("Male"),
+  level: integer("level").notNull().default(1),
+  hpIv: integer("hp_iv").notNull().default(0),
+  attackIv: integer("attack_iv").notNull().default(0),
+  shotIv: integer("shot_iv").notNull().default(0),
+  defenseIv: integer("defense_iv").notNull().default(0),
+  passives: text("passives").notNull().default("[]"),
+});

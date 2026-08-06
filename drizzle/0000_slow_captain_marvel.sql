@@ -92,6 +92,40 @@ CREATE TABLE `raw_pals` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE `raw_passive_skills` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`name` text NOT NULL,
+	`description` text,
+	`rank` integer DEFAULT 0 NOT NULL,
+	`is_implant` integer DEFAULT false NOT NULL,
+	`is_world_tree` integer DEFAULT false NOT NULL,
+	`is_mutation` integer DEFAULT false NOT NULL,
+	`is_pal_surgery_table` integer DEFAULT false NOT NULL,
+	`weight` integer DEFAULT 0 NOT NULL,
+	`hp` integer DEFAULT 0 NOT NULL,
+	`attack` integer DEFAULT 0 NOT NULL,
+	`defense` integer DEFAULT 0 NOT NULL,
+	`work_speed` integer DEFAULT 0 NOT NULL,
+	`movement` integer DEFAULT 0 NOT NULL,
+	`san` integer DEFAULT 0 NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `raw_passive_skills_name_unique` ON `raw_passive_skills` (`name`);--> statement-breakpoint
+CREATE TABLE `user_pals` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`pal_id` integer NOT NULL,
+	`character_id` text NOT NULL,
+	`nickname` text,
+	`gender` text DEFAULT 'Male' NOT NULL,
+	`level` integer DEFAULT 1 NOT NULL,
+	`hp_iv` integer DEFAULT 0 NOT NULL,
+	`attack_iv` integer DEFAULT 0 NOT NULL,
+	`shot_iv` integer DEFAULT 0 NOT NULL,
+	`defense_iv` integer DEFAULT 0 NOT NULL,
+	`passives` text DEFAULT '[]' NOT NULL,
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `raw_work_types` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,

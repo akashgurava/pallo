@@ -17,18 +17,27 @@ export async function applyMigrations(): Promise<void> {
 export async function resetDatabase(): Promise<void> {
   log.info("resetting database");
 
-  // Reconnect in case the file was deleted externally
+  // Reconnect in case the connection was invalidated
   reconnect();
   const { client } = getConnection();
 
-  // Get all user tables dynamically to avoid missing new tables
-  const rows = await client.execute(
-    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
-  );
-  for (const row of rows.rows) {
-    const name = row[0] as string;
-    await client.execute(`DROP TABLE IF EXISTS \`${name}\``);
+  // Disable foreign key checks so tables can be safely dropped in any order
+  await client.execute("PRAGMA foreign_keys = OFF;");
+
+  try {
+    // Get all tables dynamically
+    const rows = await client.execute(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
+    );
+    for (const row of rows.rows) {
+      const name = row[0] as string;
+      await client.execute(`DROP TABLE IF EXISTS \`${name}\``);
+    }
+  } finally {
+    // Re-enable foreign key checks
+    await client.execute("PRAGMA foreign_keys = ON;");
   }
+
   await applyMigrations();
   log.info("database reset complete");
 }

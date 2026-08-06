@@ -9,6 +9,7 @@ import {
   elements,
   workTypes,
   breedingCombos,
+  passiveSkills,
   meta,
 } from "$lib/server/db/schema.js";
 import { asc, count, eq, isNotNull } from "drizzle-orm";
@@ -30,7 +31,7 @@ export const GET: RequestHandler = async () => {
     );
     const failedPalNames = allPalRows.filter((p) => !statsIds.has(p.id)).map((p) => p.name);
 
-    // Element counts: how many pals per element (ordered by source display order)
+    // Element counts: how many pals per element
     const elementRows = await db
       .select({ name: elements.name, count: count() })
       .from(palElements)
@@ -44,7 +45,7 @@ export const GET: RequestHandler = async () => {
       elementCounts[row.name] = row.count;
     }
 
-    // Work type counts: how many pals have each work suitability (ordered by source display order)
+    // Work type counts: how many pals have each work suitability
     const workTypeRows = await db
       .select({ name: workTypes.name, count: count() })
       .from(palWorkSuitabilities)
@@ -86,13 +87,38 @@ export const GET: RequestHandler = async () => {
     const [breedingTotal] = await db.select({ count: count() }).from(breedingCombos).all();
     const breedingCombosCount = breedingTotal?.count ?? 0;
 
-    // Breeding missing: pals without a code (can't be used in breeding lookup)
+    // Breeding missing: pals without a code
     const [palsWithCode] = await db
       .select({ count: count() })
       .from(palStats)
       .where(isNotNull(palStats.code))
       .all();
     const breedingMissing = total - (palsWithCode?.count ?? 0);
+
+    // Passive skills counts
+    const [totalPassivesRow] = await db.select({ count: count() }).from(passiveSkills).all();
+    const totalPassives = totalPassivesRow?.count ?? 0;
+
+    const [implantPassivesRow] = await db
+      .select({ count: count() })
+      .from(passiveSkills)
+      .where(eq(passiveSkills.isImplant, true))
+      .all();
+    const implantPassives = implantPassivesRow?.count ?? 0;
+
+    const [worldTreePassivesRow] = await db
+      .select({ count: count() })
+      .from(passiveSkills)
+      .where(eq(passiveSkills.isWorldTree, true))
+      .all();
+    const worldTreePassives = worldTreePassivesRow?.count ?? 0;
+
+    const [mutationPassivesRow] = await db
+      .select({ count: count() })
+      .from(passiveSkills)
+      .where(eq(passiveSkills.isMutation, true))
+      .all();
+    const mutationPassives = mutationPassivesRow?.count ?? 0;
 
     if (total === 0 && !lastRefresh) {
       log.warn("db is empty, needs refresh");
@@ -109,6 +135,10 @@ export const GET: RequestHandler = async () => {
       mountCounts,
       breedingCombos: breedingCombosCount,
       breedingMissing,
+      totalPassives,
+      implantPassives,
+      worldTreePassives,
+      mutationPassives,
       lastRefresh,
     };
 
@@ -127,6 +157,10 @@ export const GET: RequestHandler = async () => {
       mountCounts: {},
       breedingCombos: 0,
       breedingMissing: 0,
+      totalPassives: 0,
+      implantPassives: 0,
+      worldTreePassives: 0,
+      mutationPassives: 0,
       lastRefresh: null,
     };
 

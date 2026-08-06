@@ -12,6 +12,10 @@
     mountCounts: {},
     breedingCombos: 0,
     breedingMissing: 0,
+    totalPassives: 0,
+    implantPassives: 0,
+    worldTreePassives: 0,
+    mutationPassives: 0,
     lastRefresh: null,
   });
 
@@ -146,6 +150,37 @@
             <div class="text-center">
               <div class="text-4xl font-bold">{stats.breedingCombos}</div>
               <div class="text-muted-foreground text-sm">Combinations</div>
+            </div>
+          </div>
+        {:else}
+          <div class="text-muted-foreground text-sm">None</div>
+        {/if}
+      </div>
+    </section>
+
+    <!-- Passive Skills -->
+    <section>
+      <h2 class="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
+        Passive Skills
+      </h2>
+      <div class="h-14">
+        {#if stats.totalPassives > 0}
+          <div class="flex flex-wrap gap-x-8 gap-y-3">
+            <div class="text-center">
+              <div class="text-4xl font-bold">{stats.totalPassives}</div>
+              <div class="text-muted-foreground text-sm">Total</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-purple-400">{stats.implantPassives}</div>
+              <div class="text-muted-foreground text-sm">Implants</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-emerald-400">{stats.worldTreePassives}</div>
+              <div class="text-muted-foreground text-sm">World Tree</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-amber-400">{stats.mutationPassives}</div>
+              <div class="text-muted-foreground text-sm">Mutations</div>
             </div>
           </div>
         {:else}

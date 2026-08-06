@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "fdb9119f-0cbd-4fbb-a42e-aeeebb64ec19",
+  "id": "e5fbbad6-981e-4b42-934a-04383d8745fc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "raw_breeding_combos": {
@@ -35,8 +35,12 @@
           "name": "raw_breeding_combos_parent1_id_raw_pals_id_fk",
           "tableFrom": "raw_breeding_combos",
           "tableTo": "raw_pals",
-          "columnsFrom": ["parent1_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "parent1_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -44,8 +48,12 @@
           "name": "raw_breeding_combos_parent2_id_raw_pals_id_fk",
           "tableFrom": "raw_breeding_combos",
           "tableTo": "raw_pals",
-          "columnsFrom": ["parent2_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "parent2_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -53,15 +61,22 @@
           "name": "raw_breeding_combos_child_id_raw_pals_id_fk",
           "tableFrom": "raw_breeding_combos",
           "tableTo": "raw_pals",
-          "columnsFrom": ["child_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "child_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_breeding_combos_parent1_id_parent2_id_pk": {
-          "columns": ["parent1_id", "parent2_id"],
+          "columns": [
+            "parent1_id",
+            "parent2_id"
+          ],
           "name": "raw_breeding_combos_parent1_id_parent2_id_pk"
         }
       },
@@ -97,7 +112,9 @@
       "indexes": {
         "raw_elements_name_unique": {
           "name": "raw_elements_name_unique",
-          "columns": ["name"],
+          "columns": [
+            "name"
+          ],
           "isUnique": true
         }
       },
@@ -151,7 +168,9 @@
       "indexes": {
         "raw_mount_types_name_unique": {
           "name": "raw_mount_types_name_unique",
-          "columns": ["name"],
+          "columns": [
+            "name"
+          ],
           "isUnique": true
         }
       },
@@ -184,8 +203,12 @@
           "name": "raw_pal_elements_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_elements",
           "tableTo": "raw_pals",
-          "columnsFrom": ["pal_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -193,15 +216,22 @@
           "name": "raw_pal_elements_element_id_raw_elements_id_fk",
           "tableFrom": "raw_pal_elements",
           "tableTo": "raw_elements",
-          "columnsFrom": ["element_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "element_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_pal_elements_pal_id_element_id_pk": {
-          "columns": ["pal_id", "element_id"],
+          "columns": [
+            "pal_id",
+            "element_id"
+          ],
           "name": "raw_pal_elements_pal_id_element_id_pk"
         }
       },
@@ -239,8 +269,12 @@
           "name": "raw_pal_mounts_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_mounts",
           "tableTo": "raw_pals",
-          "columnsFrom": ["pal_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -248,15 +282,22 @@
           "name": "raw_pal_mounts_mount_type_id_raw_mount_types_id_fk",
           "tableFrom": "raw_pal_mounts",
           "tableTo": "raw_mount_types",
-          "columnsFrom": ["mount_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "mount_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_pal_mounts_pal_id_mount_type_id_pk": {
-          "columns": ["pal_id", "mount_type_id"],
+          "columns": [
+            "pal_id",
+            "mount_type_id"
+          ],
           "name": "raw_pal_mounts_pal_id_mount_type_id_pk"
         }
       },
@@ -336,8 +377,12 @@
           "name": "raw_pal_movement_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_movement",
           "tableTo": "raw_pals",
-          "columnsFrom": ["pal_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -468,8 +513,12 @@
           "name": "raw_pal_stats_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_stats",
           "tableTo": "raw_pals",
-          "columnsFrom": ["pal_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -509,8 +558,12 @@
           "name": "raw_pal_work_suitabilities_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_work_suitabilities",
           "tableTo": "raw_pals",
-          "columnsFrom": ["pal_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -518,15 +571,22 @@
           "name": "raw_pal_work_suitabilities_work_type_id_raw_work_types_id_fk",
           "tableFrom": "raw_pal_work_suitabilities",
           "tableTo": "raw_work_types",
-          "columnsFrom": ["work_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "work_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_pal_work_suitabilities_pal_id_work_type_id_pk": {
-          "columns": ["pal_id", "work_type_id"],
+          "columns": [
+            "pal_id",
+            "work_type_id"
+          ],
           "name": "raw_pal_work_suitabilities_pal_id_work_type_id_pk"
         }
       },
@@ -571,6 +631,249 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "raw_passive_skills": {
+      "name": "raw_passive_skills",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "rank": {
+          "name": "rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "is_implant": {
+          "name": "is_implant",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "is_world_tree": {
+          "name": "is_world_tree",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "is_mutation": {
+          "name": "is_mutation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "is_pal_surgery_table": {
+          "name": "is_pal_surgery_table",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "weight": {
+          "name": "weight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "hp": {
+          "name": "hp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "attack": {
+          "name": "attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "defense": {
+          "name": "defense",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "work_speed": {
+          "name": "work_speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "movement": {
+          "name": "movement",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "san": {
+          "name": "san",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "raw_passive_skills_name_unique": {
+          "name": "raw_passive_skills_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "user_pals": {
+      "name": "user_pals",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "pal_id": {
+          "name": "pal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "character_id": {
+          "name": "character_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nickname": {
+          "name": "nickname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Male'"
+        },
+        "level": {
+          "name": "level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "hp_iv": {
+          "name": "hp_iv",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "attack_iv": {
+          "name": "attack_iv",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "shot_iv": {
+          "name": "shot_iv",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "defense_iv": {
+          "name": "defense_iv",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "passives": {
+          "name": "passives",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_pals_pal_id_raw_pals_id_fk": {
+          "name": "user_pals_pal_id_raw_pals_id_fk",
+          "tableFrom": "user_pals",
+          "tableTo": "raw_pals",
+          "columnsFrom": [
+            "pal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "raw_work_types": {
       "name": "raw_work_types",
       "columns": {
@@ -600,7 +903,9 @@
       "indexes": {
         "raw_work_types_name_unique": {
           "name": "raw_work_types_name_unique",
-          "columns": ["name"],
+          "columns": [
+            "name"
+          ],
           "isUnique": true
         }
       },

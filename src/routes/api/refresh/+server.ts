@@ -3,6 +3,7 @@ import { runListScrape } from "$lib/server/scraper/run-list.js";
 import { runMountsScrape } from "$lib/server/scraper/run-mounts.js";
 import { runDetailScrape } from "$lib/server/scraper/run-details.js";
 import { runBreedingScrape } from "$lib/server/scraper/run-breeding.js";
+import { runPassivesScrape } from "$lib/server/scraper/run-passives.js";
 import { createLogger } from "$lib/server/logger.js";
 import type { RequestHandler } from "./$types.js";
 
@@ -38,13 +39,19 @@ export const POST: RequestHandler = async () => {
             (message, progress) => send({ progress, message }),
             (message) => send({ progress: -1, message, failed: true }),
             20,
-            59,
+            55,
           );
 
           await runBreedingScrape(
             (message, progress) => send({ progress, message }),
             (message) => send({ progress: -1, message, failed: true }),
-            59,
+            55,
+            88,
+          );
+
+          await runPassivesScrape(
+            (message, progress) => send({ progress, message }),
+            88,
             98,
           );
 
