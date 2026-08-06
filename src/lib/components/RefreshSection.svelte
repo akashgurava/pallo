@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Progress } from "$lib/components/ui/progress/index.js";
-  import { timeAgo } from "$lib/utils/time.js";
+  import { Button } from "$lib/components/ui/button/index";
+  import { Progress } from "$lib/components/ui/progress/index";
+  import { timeAgo } from "$lib/utils/time";
 
   let {
     lastRefresh,

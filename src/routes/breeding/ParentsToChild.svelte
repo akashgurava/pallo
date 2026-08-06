@@ -1,12 +1,6 @@
 <script lang="ts">
   import PalAutocomplete from "$lib/components/PalAutocomplete.svelte";
-  import type {
-    PalRow,
-    WorkSuitability,
-    MountInfo,
-    PalStatsData,
-    PalMovement,
-  } from "$lib/types.js";
+  import type { PalRow, WorkSuitability, MountInfo, PalStatsData, PalMovement } from "$lib/types";
 
   interface BreedingChild {
     id: number;
@@ -38,7 +32,9 @@
       return;
     }
     const controller = new AbortController();
-    fetch(`/api/breeding?parent1=${parentA.id}&parent2=${parentB.id}`, { signal: controller.signal })
+    fetch(`/api/breeding?parent1=${parentA.id}&parent2=${parentB.id}`, {
+      signal: controller.signal,
+    })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         child = d?.child ?? null;

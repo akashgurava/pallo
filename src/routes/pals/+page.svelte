@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
+  import * as Sheet from "$lib/components/ui/sheet/index";
+  import { Button } from "$lib/components/ui/button/index";
   import FilterSidebar from "$lib/components/FilterSidebar.svelte";
   import PalTable from "$lib/components/PalTable.svelte";
   import { SvelteSet, SvelteMap } from "svelte/reactivity";
@@ -12,9 +12,9 @@
     type ElementFilter,
     type MountFilter,
     type StatFilter,
-  } from "$lib/filters.js";
-  import { sortPals, type SortKey, type SortDir } from "$lib/sorting.js";
-  import type { PalRow } from "$lib/types.js";
+  } from "$lib/filters";
+  import { sortPals, type SortKey, type SortDir } from "$lib/sorting";
+  import type { PalRow } from "$lib/types";
 
   let palsList = $state<PalRow[]>([]);
   let loading = $state(true);
@@ -180,7 +180,6 @@
     onSetWorkTypeLogic: (l: FilterLogic) => (workTypeLogic = l),
     onClear: clearFilters,
   });
-
 </script>
 
 <div class="flex h-full">

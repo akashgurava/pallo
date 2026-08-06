@@ -1,6 +1,6 @@
 <script lang="ts">
-  import * as Table from "$lib/components/ui/table/index.js";
-  import type { SortKey, SortDir } from "$lib/sorting.js";
+  import * as Table from "$lib/components/ui/table/index";
+  import type { SortKey, SortDir } from "$lib/sorting";
 
   let {
     key,

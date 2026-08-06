@@ -1,9 +1,9 @@
 <script lang="ts">
   import { SvelteSet } from "svelte/reactivity";
-  import * as Table from "$lib/components/ui/table/index.js";
+  import * as Table from "$lib/components/ui/table/index";
   import PalAutocomplete from "$lib/components/PalAutocomplete.svelte";
   import ElementIcon from "$lib/components/ElementIcon.svelte";
-  import type { PalRow } from "$lib/types.js";
+  import type { PalRow } from "$lib/types";
 
   interface ParentPair {
     parent1: { id: number; number: string; name: string; elements: string[] };
@@ -124,7 +124,9 @@
         {pals}
         selected={reverseChild}
         placeholder="Search child..."
-        onSelect={(pal) => { reverseChild = pal; }}
+        onSelect={(pal) => {
+          reverseChild = pal;
+        }}
       />
     </div>
     <div>

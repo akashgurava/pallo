@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import * as Tabs from "$lib/components/ui/tabs/index.js";
-  import type { PalRow } from "$lib/types.js";
+  import * as Tabs from "$lib/components/ui/tabs/index";
+  import type { PalRow } from "$lib/types";
   import ParentsToChild from "./ParentsToChild.svelte";
   import OneParentToChilds from "./OneParentToChilds.svelte";
   import ChildToParents from "./ChildToParents.svelte";
-  import { breedingState } from "./breeding-state.svelte.js";
+  import { breedingState } from "./breeding-state.svelte.ts";
 
   let palsList = $state<PalRow[]>([]);
   let loading = $state(true);
@@ -70,7 +70,11 @@
 
     <Tabs.Content value="parents-child" class="flex justify-center pt-6">
       {#if !loading}
-        <ParentsToChild pals={palsList} bind:parentA={breedingState.parentA} bind:parentB={breedingState.parentB} />
+        <ParentsToChild
+          pals={palsList}
+          bind:parentA={breedingState.parentA}
+          bind:parentB={breedingState.parentB}
+        />
       {/if}
     </Tabs.Content>
 

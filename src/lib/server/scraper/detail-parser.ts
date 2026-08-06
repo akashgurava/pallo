@@ -1,5 +1,5 @@
 import { parse, type HTMLElement } from "node-html-parser";
-import { createLogger } from "../logger.js";
+import { createLogger } from "../logger";
 
 const log = createLogger("scraper:detail-parser");
 

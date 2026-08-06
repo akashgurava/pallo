@@ -7,7 +7,7 @@
     type MountFilter,
     type StatFilter,
     type StatOp,
-  } from "$lib/filters.js";
+  } from "$lib/filters";
   import ElementIcon from "./ElementIcon.svelte";
   import WorkTypeIcon from "./WorkTypeIcon.svelte";
   import LogicToggle from "./LogicToggle.svelte";

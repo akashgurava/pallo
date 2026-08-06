@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PalRow } from "$lib/types.js";
+  import type { PalRow } from "$lib/types";
   import PalInlineInfo from "$lib/components/PalInlineInfo.svelte";
 
   let {

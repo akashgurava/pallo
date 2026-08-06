@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e5fbbad6-981e-4b42-934a-04383d8745fc",
+  "id": "57d6ecff-c37c-45cf-b369-666f7e6bbb84",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "raw_breeding_combos": {
@@ -29,54 +29,45 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "raw_breeding_combos_child_id_idx": {
+          "name": "raw_breeding_combos_child_id_idx",
+          "columns": ["child_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "raw_breeding_combos_parent1_id_raw_pals_id_fk": {
           "name": "raw_breeding_combos_parent1_id_raw_pals_id_fk",
           "tableFrom": "raw_breeding_combos",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "parent1_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["parent1_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "raw_breeding_combos_parent2_id_raw_pals_id_fk": {
           "name": "raw_breeding_combos_parent2_id_raw_pals_id_fk",
           "tableFrom": "raw_breeding_combos",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "parent2_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["parent2_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "raw_breeding_combos_child_id_raw_pals_id_fk": {
           "name": "raw_breeding_combos_child_id_raw_pals_id_fk",
           "tableFrom": "raw_breeding_combos",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "child_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["child_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_breeding_combos_parent1_id_parent2_id_pk": {
-          "columns": [
-            "parent1_id",
-            "parent2_id"
-          ],
+          "columns": ["parent1_id", "parent2_id"],
           "name": "raw_breeding_combos_parent1_id_parent2_id_pk"
         }
       },
@@ -112,9 +103,7 @@
       "indexes": {
         "raw_elements_name_unique": {
           "name": "raw_elements_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -168,9 +157,7 @@
       "indexes": {
         "raw_mount_types_name_unique": {
           "name": "raw_mount_types_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -203,35 +190,24 @@
           "name": "raw_pal_elements_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_elements",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "pal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "raw_pal_elements_element_id_raw_elements_id_fk": {
           "name": "raw_pal_elements_element_id_raw_elements_id_fk",
           "tableFrom": "raw_pal_elements",
           "tableTo": "raw_elements",
-          "columnsFrom": [
-            "element_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["element_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_pal_elements_pal_id_element_id_pk": {
-          "columns": [
-            "pal_id",
-            "element_id"
-          ],
+          "columns": ["pal_id", "element_id"],
           "name": "raw_pal_elements_pal_id_element_id_pk"
         }
       },
@@ -269,35 +245,24 @@
           "name": "raw_pal_mounts_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_mounts",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "pal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "raw_pal_mounts_mount_type_id_raw_mount_types_id_fk": {
           "name": "raw_pal_mounts_mount_type_id_raw_mount_types_id_fk",
           "tableFrom": "raw_pal_mounts",
           "tableTo": "raw_mount_types",
-          "columnsFrom": [
-            "mount_type_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["mount_type_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_pal_mounts_pal_id_mount_type_id_pk": {
-          "columns": [
-            "pal_id",
-            "mount_type_id"
-          ],
+          "columns": ["pal_id", "mount_type_id"],
           "name": "raw_pal_mounts_pal_id_mount_type_id_pk"
         }
       },
@@ -377,13 +342,9 @@
           "name": "raw_pal_movement_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_movement",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "pal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -507,19 +468,21 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "raw_pal_stats_code_unique": {
+          "name": "raw_pal_stats_code_unique",
+          "columns": ["code"],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "raw_pal_stats_pal_id_raw_pals_id_fk": {
           "name": "raw_pal_stats_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_stats",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "pal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -558,35 +521,24 @@
           "name": "raw_pal_work_suitabilities_pal_id_raw_pals_id_fk",
           "tableFrom": "raw_pal_work_suitabilities",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "pal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "raw_pal_work_suitabilities_work_type_id_raw_work_types_id_fk": {
           "name": "raw_pal_work_suitabilities_work_type_id_raw_work_types_id_fk",
           "tableFrom": "raw_pal_work_suitabilities",
           "tableTo": "raw_work_types",
-          "columnsFrom": [
-            "work_type_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["work_type_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "raw_pal_work_suitabilities_pal_id_work_type_id_pk": {
-          "columns": [
-            "pal_id",
-            "work_type_id"
-          ],
+          "columns": ["pal_id", "work_type_id"],
           "name": "raw_pal_work_suitabilities_pal_id_work_type_id_pk"
         }
       },
@@ -625,7 +577,13 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "raw_pals_name_unique": {
+          "name": "raw_pals_name_unique",
+          "columns": ["name"],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -755,14 +713,74 @@
       "indexes": {
         "raw_passive_skills_name_unique": {
           "name": "raw_passive_skills_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "user_pal_passives": {
+      "name": "user_pal_passives",
+      "columns": {
+        "user_pal_id": {
+          "name": "user_pal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "passive_skill_id": {
+          "name": "passive_skill_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "slot": {
+          "name": "slot",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "user_pal_passives_passive_skill_id_idx": {
+          "name": "user_pal_passives_passive_skill_id_idx",
+          "columns": ["passive_skill_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_pal_passives_user_pal_id_user_pals_id_fk": {
+          "name": "user_pal_passives_user_pal_id_user_pals_id_fk",
+          "tableFrom": "user_pal_passives",
+          "tableTo": "user_pals",
+          "columnsFrom": ["user_pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_pal_passives_passive_skill_id_raw_passive_skills_id_fk": {
+          "name": "user_pal_passives_passive_skill_id_raw_passive_skills_id_fk",
+          "tableFrom": "user_pal_passives",
+          "tableTo": "raw_passive_skills",
+          "columnsFrom": ["passive_skill_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_pal_passives_user_pal_id_passive_skill_id_pk": {
+          "columns": ["user_pal_id", "passive_skill_id"],
+          "name": "user_pal_passives_user_pal_id_passive_skill_id_pk"
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -779,13 +797,6 @@
         "pal_id": {
           "name": "pal_id",
           "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "character_id": {
-          "name": "character_id",
-          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -829,14 +840,6 @@
           "autoincrement": false,
           "default": 0
         },
-        "shot_iv": {
-          "name": "shot_iv",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
         "defense_iv": {
           "name": "defense_iv",
           "type": "integer",
@@ -844,14 +847,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": 0
-        },
-        "passives": {
-          "name": "passives",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
         }
       },
       "indexes": {},
@@ -860,13 +855,9 @@
           "name": "user_pals_pal_id_raw_pals_id_fk",
           "tableFrom": "user_pals",
           "tableTo": "raw_pals",
-          "columnsFrom": [
-            "pal_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "columnsFrom": ["pal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -903,9 +894,7 @@
       "indexes": {
         "raw_work_types_name_unique": {
           "name": "raw_work_types_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },

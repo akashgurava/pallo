@@ -27,3 +27,5 @@ logs/
 
 SaveGames/
 scratch/
+.venv/
+data/

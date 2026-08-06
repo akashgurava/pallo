@@ -1,5 +1,5 @@
 import { parse } from "node-html-parser";
-import { createLogger } from "../logger.js";
+import { createLogger } from "../logger";
 
 const log = createLogger("scraper:passives-parser");
 
@@ -109,7 +109,13 @@ export function parsePassiveSkillsPage(html: string): ParsedPassiveSkill[] {
     const attack = extractStat(["Pal_Attack", "PalAttack", "MeleeAttack", "ShotAttack", "Attack"]);
     const defense = extractStat(["Pal_Defense", "Defense"]);
     const workSpeed = extractStat(["Work Speed", "WorkSpeed", "CraftSpeed"]);
-    const movement = extractStat(["MoveSpeed", "MovementSpeed", "Move Speed", "SwimSpeed", "movement speed"]);
+    const movement = extractStat([
+      "MoveSpeed",
+      "MovementSpeed",
+      "Move Speed",
+      "SwimSpeed",
+      "movement speed",
+    ]);
 
     // SAN:
     // 1. Tooltip: Sanity_Decrease -10% => +10 (SAN drops 10% slower)
@@ -125,7 +131,9 @@ export function parsePassiveSkillsPage(html: string): ParsedPassiveSkill[] {
         const dir = sanDescMatch[2]!.toLowerCase();
         san = dir === "slower" ? Math.round(val) : Math.round(-val);
       } else {
-        const sanDepletionMatch = combinedText.match(/SAN\s+depletion\s+rate\s+([+-]?\d+(?:\.\d+)?)%/i);
+        const sanDepletionMatch = combinedText.match(
+          /SAN\s+depletion\s+rate\s+([+-]?\d+(?:\.\d+)?)%/i,
+        );
         if (sanDepletionMatch) {
           san = Math.round(-parseFloat(sanDepletionMatch[1]!));
         }

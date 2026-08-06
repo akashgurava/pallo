@@ -1,5 +1,5 @@
-import { ready } from "$lib/server/db/index.js";
-import { createLogger } from "$lib/server/logger.js";
+import { ready } from "$lib/server/db/index";
+import { createLogger } from "$lib/server/logger";
 
 const log = createLogger("server");
 

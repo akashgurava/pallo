@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { resolve } from "$app/paths";
-  import * as NavigationMenu from "$lib/components/ui/navigation-menu/index.js";
+  import * as NavigationMenu from "$lib/components/ui/navigation-menu/index";
 </script>
 
 <nav class="border-b border-neutral-800 bg-neutral-950">

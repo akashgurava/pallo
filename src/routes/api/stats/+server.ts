@@ -1,4 +1,4 @@
-import { getConnection } from "$lib/server/db/index.js";
+import { getConnection } from "$lib/server/db/index";
 import {
   pals,
   palStats,
@@ -11,12 +11,12 @@ import {
   breedingCombos,
   passiveSkills,
   meta,
-} from "$lib/server/db/schema.js";
+} from "$lib/server/db/schema";
 import { asc, count, eq, isNotNull } from "drizzle-orm";
-import { createLogger } from "$lib/server/logger.js";
+import { createLogger } from "$lib/server/logger";
 import { json } from "@sveltejs/kit";
-import type { Stats } from "$lib/types.js";
-import type { RequestHandler } from "./$types.js";
+import type { Stats } from "$lib/types";
+import type { RequestHandler } from "./$types";
 
 const log = createLogger("api:stats");
 
@@ -25,7 +25,11 @@ export const GET: RequestHandler = async () => {
     const { db } = getConnection();
     const [totalPals] = await db.select({ count: count() }).from(pals).all();
 
-    const allPalRows = await db.select({ id: pals.id, name: pals.name }).from(pals).all();
+    const allPalRows = await db
+      .select({ id: pals.id, name: pals.name })
+      .from(pals)
+      .orderBy(asc(pals.id))
+      .all();
     const statsIds = new Set(
       (await db.select({ palId: palStats.palId }).from(palStats).all()).map((r) => r.palId),
     );
@@ -83,17 +87,27 @@ export const GET: RequestHandler = async () => {
 
     const total = totalPals?.count ?? 0;
 
-    // Breeding combos count
-    const [breedingTotal] = await db.select({ count: count() }).from(breedingCombos).all();
-    const breedingCombosCount = breedingTotal?.count ?? 0;
-
-    // Breeding missing: pals without a code
-    const [palsWithCode] = await db
-      .select({ count: count() })
-      .from(palStats)
-      .where(isNotNull(palStats.code))
+    // Breeding combos count & missing pals calculation
+    const combos = await db
+      .select({
+        p1: breedingCombos.parent1Id,
+        p2: breedingCombos.parent2Id,
+        child: breedingCombos.childId,
+      })
+      .from(breedingCombos)
       .all();
-    const breedingMissing = total - (palsWithCode?.count ?? 0);
+
+    const breedingCombosCount = combos.length;
+    const palsInBreeding = new Set<number>();
+    for (const c of combos) {
+      palsInBreeding.add(c.p1);
+      palsInBreeding.add(c.p2);
+      palsInBreeding.add(c.child);
+    }
+    const breedingMissingPalNames = allPalRows
+      .filter((p) => !palsInBreeding.has(p.id))
+      .map((p) => p.name);
+    const breedingMissing = breedingMissingPalNames.length;
 
     // Passive skills counts
     const [totalPassivesRow] = await db.select({ count: count() }).from(passiveSkills).all();
@@ -123,7 +137,11 @@ export const GET: RequestHandler = async () => {
     if (total === 0 && !lastRefresh) {
       log.warn("db is empty, needs refresh");
     } else {
-      log.info("stats fetched", { totalPals: total, failed: failedPalNames.length });
+      log.info("stats fetched", {
+        totalPals: total,
+        failed: failedPalNames.length,
+        breedingMissing,
+      });
     }
 
     const result: Stats = {
@@ -135,6 +153,7 @@ export const GET: RequestHandler = async () => {
       mountCounts,
       breedingCombos: breedingCombosCount,
       breedingMissing,
+      breedingMissingNames: breedingMissingPalNames,
       totalPassives,
       implantPassives,
       worldTreePassives,

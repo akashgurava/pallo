@@ -1,5 +1,5 @@
-import type { PalRow } from "$lib/types.js";
-import type { WorkTypeFilter, FilterLogic } from "$lib/filters.js";
+import type { PalRow } from "$lib/types";
+import type { WorkTypeFilter, FilterLogic } from "$lib/filters";
 
 export type SortKey =
   | "id"

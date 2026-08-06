@@ -1,12 +1,25 @@
-import { json } from '@sveltejs/kit';
-import path from 'path';
-import fs from 'fs';
-import os from 'os';
-import { PalSaveReader, PAL_CHARACTER_ID_MAP, type ExtractedPal } from '$lib/server/save_reader/save_reader';
-import { getConnection } from '$lib/server/db/index.js';
-import { passiveSkills, pals as palsTable, palStats as palStatsTable, userPals } from '$lib/server/db/schema.js';
-import { eq } from 'drizzle-orm';
-import type { RequestHandler } from './$types';
+import { json } from "@sveltejs/kit";
+import path from "path";
+import fs from "fs";
+import os from "os";
+import {
+  PalSaveReader,
+  PAL_CHARACTER_ID_MAP,
+  PASSIVE_SKILL_ID_MAP,
+  type ExtractedPal,
+} from "$lib/server/save_reader/save_reader";
+import { getConnection } from "$lib/server/db/index";
+import {
+  passiveSkills,
+  pals as palsTable,
+  palStats as palStatsTable,
+  userPals,
+  userPalPassives,
+  elements as elementsTable,
+  palElements as palElementsTable,
+} from "$lib/server/db/schema";
+import { eq } from "drizzle-orm";
+import type { RequestHandler } from "./$types";
 
 async function getPassivesMap() {
   try {
@@ -19,13 +32,14 @@ async function getPassivesMap() {
 }
 
 /**
- * Saves extracted Level.sav pals into `user_pals` table with palId referencing `raw_pals.id`
+ * Saves extracted Level.sav pals into `user_pals` and `user_pal_passives` tables
  */
 async function savePalsToDb(extracted: ExtractedPal[]): Promise<void> {
   const { db } = getConnection();
 
   const dbPals = await db.select().from(palsTable);
   const dbStats = await db.select().from(palStatsTable);
+  const dbPassives = await db.select().from(passiveSkills);
 
   const statsMap = new Map<string, number>();
   for (const s of dbStats) {
@@ -39,8 +53,13 @@ async function savePalsToDb(extracted: ExtractedPal[]): Promise<void> {
     nameMap.set(p.name.toLowerCase(), p.id);
   }
 
+  const passiveMap = new Map<string, number>();
+  for (const ps of dbPassives) {
+    passiveMap.set(ps.name.toLowerCase(), ps.id);
+  }
+
   function resolvePalId(characterId: string, palName: string): number {
-    const raw = characterId.replace(/^BOSS_/, '').replace(/_Gold$/, '');
+    const raw = characterId.replace(/^BOSS_/, "").replace(/_Gold$/, "");
 
     // 1. Check palStats code (e.g. Boar -> Rushoar pal.id)
     if (statsMap.has(raw.toLowerCase())) {
@@ -65,49 +84,65 @@ async function savePalsToDb(extracted: ExtractedPal[]): Promise<void> {
     return dbPals[0]?.id || 1;
   }
 
-  // Clear previous user pals table records
+  // Clear previous records in user_pal_passives and user_pals
+  await db.delete(userPalPassives).run();
   await db.delete(userPals).run();
 
-  // Insert extracted pals into user_pals
+  // Insert extracted pals into user_pals and user_pal_passives
   for (const p of extracted) {
-    const resolvedPalId = resolvePalId(p.characterId, p.palName);
-    await db
+    const resolvedPalId = resolvePalId(p.characterId || "", p.palName);
+    const [inserted] = await db
       .insert(userPals)
       .values({
         palId: resolvedPalId,
-        characterId: p.characterId,
         nickname: p.nickname || null,
         gender: p.gender,
         level: p.level,
         hpIv: p.hpIv,
-        attackIv: p.attackIv,
-        shotIv: p.shotIv,
+        attackIv: p.shotIv || p.attackIv,
         defenseIv: p.defenseIv,
-        passives: JSON.stringify(p.passives),
       })
-      .run();
+      .returning({ id: userPals.id });
+
+    if (inserted?.id && p.passives && p.passives.length > 0) {
+      for (let slot = 0; slot < p.passives.length; slot++) {
+        const rawSkill = p.passives[slot];
+        if (!rawSkill) continue;
+        const mappedName = PASSIVE_SKILL_ID_MAP[rawSkill] || rawSkill;
+        const skillId = passiveMap.get(mappedName.toLowerCase());
+        if (skillId) {
+          try {
+            await db
+              .insert(userPalPassives)
+              .values({
+                userPalId: inserted.id,
+                passiveSkillId: skillId,
+                slot: slot,
+              })
+              .run();
+          } catch (e) {}
+        }
+      }
+    }
   }
 }
 
 /**
- * Fetches user pals from SQLite by INNER JOINing user_pals with raw_pals
+ * Fetches user pals from SQLite by JOINing user_pals, raw_pals, user_pal_passives, and raw_passive_skills
  */
 async function fetchUserPalsFromDb() {
   const { db } = getConnection();
 
-  const records = await db
+  const userPalsList = await db
     .select({
       id: userPals.id,
       palId: userPals.palId,
-      characterId: userPals.characterId,
       nickname: userPals.nickname,
       gender: userPals.gender,
       level: userPals.level,
       hpIv: userPals.hpIv,
       attackIv: userPals.attackIv,
-      shotIv: userPals.shotIv,
       defenseIv: userPals.defenseIv,
-      passivesRaw: userPals.passives,
       number: palsTable.number,
       variant: palsTable.variant,
       palName: palsTable.name,
@@ -115,17 +150,47 @@ async function fetchUserPalsFromDb() {
     .from(userPals)
     .innerJoin(palsTable, eq(userPals.palId, palsTable.id));
 
-  return records.map((r) => {
-    let passives: string[] = [];
-    try {
-      passives = JSON.parse(r.passivesRaw);
-    } catch (e) {}
+  // Fetch elements for pals
+  const palElementRows = await db
+    .select({
+      palId: palElementsTable.palId,
+      elementName: elementsTable.name,
+    })
+    .from(palElementsTable)
+    .innerJoin(elementsTable, eq(palElementsTable.elementId, elementsTable.id))
+    .orderBy(elementsTable.sortOrder);
 
+  const elementsByPalId = new Map<number, string[]>();
+  for (const r of palElementRows) {
+    if (!elementsByPalId.has(r.palId)) {
+      elementsByPalId.set(r.palId, []);
+    }
+    elementsByPalId.get(r.palId)!.push(r.elementName);
+  }
+
+  const passivesList = await db
+    .select({
+      userPalId: userPalPassives.userPalId,
+      passiveName: passiveSkills.name,
+      slot: userPalPassives.slot,
+    })
+    .from(userPalPassives)
+    .innerJoin(passiveSkills, eq(userPalPassives.passiveSkillId, passiveSkills.id));
+
+  const passivesByPalId = new Map<number, string[]>();
+  for (const p of passivesList) {
+    if (!passivesByPalId.has(p.userPalId)) {
+      passivesByPalId.set(p.userPalId, []);
+    }
+    passivesByPalId.get(p.userPalId)!.push(p.passiveName);
+  }
+
+  return userPalsList.map((r) => {
     return {
       id: r.id,
       palId: r.palId,
-      characterId: r.characterId,
       palName: r.palName,
+      elements: elementsByPalId.get(r.palId) || [],
       number: r.number,
       variant: r.variant,
       nickname: r.nickname,
@@ -133,9 +198,8 @@ async function fetchUserPalsFromDb() {
       level: r.level,
       hpIv: r.hpIv,
       attackIv: r.attackIv,
-      shotIv: r.shotIv,
       defenseIv: r.defenseIv,
-      passives: passives,
+      passives: passivesByPalId.get(r.id) || [],
     };
   });
 }
@@ -149,7 +213,7 @@ export const GET: RequestHandler = async () => {
 
     if (pals.length === 0) {
       // Auto-load Level.sav if present in ./SaveGames
-      const saveDir = path.resolve('SaveGames');
+      const saveDir = path.resolve("SaveGames");
       if (fs.existsSync(saveDir)) {
         function findLevelSav(dir: string): string | null {
           const files = fs.readdirSync(dir);
@@ -159,7 +223,7 @@ export const GET: RequestHandler = async () => {
             if (stat.isDirectory()) {
               const res = findLevelSav(fullPath);
               if (res) return res;
-            } else if (file === 'Level.sav') {
+            } else if (file === "Level.sav") {
               return fullPath;
             }
           }
@@ -180,10 +244,13 @@ export const GET: RequestHandler = async () => {
       success: true,
       totalPals: pals.length,
       pals: pals,
-      passivesMap: passivesMap
+      passivesMap: passivesMap,
     });
   } catch (err: any) {
-    return json({ error: err.message || 'Failed to read save data', pals: [], passivesMap: {} }, { status: 500 });
+    return json(
+      { error: err.message || "Failed to read save data", pals: [], passivesMap: {} },
+      { status: 500 },
+    );
   }
 };
 
@@ -191,23 +258,35 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     const passivesMap = await getPassivesMap();
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
+    const file = formData.get("file") as File | null;
 
     if (!file) {
-      return json({ error: 'No Level.sav file uploaded', pals: [], passivesMap }, { status: 400 });
+      return json({ error: "No Level.sav file uploaded", pals: [], passivesMap }, { status: 400 });
     }
 
     // Write uploaded file to temp file
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pallo-upload-'));
-    const tmpSavPath = path.join(tmpDir, file.name || 'Level.sav');
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "pallo-upload-"));
+    const tmpSavPath = path.join(tmpDir, file.name || "Level.sav");
     const arrayBuffer = await file.arrayBuffer();
-    fs.writeFileSync(tmpSavPath, Buffer.from(arrayBuffer));
+    const fileBuffer = Buffer.from(arrayBuffer);
+    fs.writeFileSync(tmpSavPath, fileBuffer);
+
+    // Also save timestamped copy to ./data/
+    const dataDir = path.resolve("data");
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const timestampedSavPath = path.join(dataDir, `Level_${timestamp}.sav`);
+    try {
+      fs.writeFileSync(timestampedSavPath, fileBuffer);
+    } catch (e) {}
 
     // Process uploaded file
     const gvasBuf = PalSaveReader.decompressSavFile(tmpSavPath);
     const extracted = PalSaveReader.readPalsFromGvas(gvasBuf);
 
-    // Save to DB with foreign key palId referencing pals.id
+    // Save to DB with foreign key palId referencing pals.id and passiveSkillId referencing passiveSkills.id
     await savePalsToDb(extracted);
     const pals = await fetchUserPalsFromDb();
 
@@ -221,9 +300,16 @@ export const POST: RequestHandler = async ({ request }) => {
       filename: file.name,
       totalPals: pals.length,
       pals: pals,
-      passivesMap: passivesMap
+      passivesMap: passivesMap,
     });
   } catch (err: any) {
-    return json({ error: err.message || 'Failed to parse uploaded Level.sav file', pals: [], passivesMap: {} }, { status: 500 });
+    return json(
+      {
+        error: err.message || "Failed to parse uploaded Level.sav file",
+        pals: [],
+        passivesMap: {},
+      },
+      { status: 500 },
+    );
   }
 };

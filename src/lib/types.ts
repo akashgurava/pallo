@@ -8,6 +8,7 @@ export interface Stats {
   mountCounts: Record<string, number>;
   breedingCombos: number;
   breedingMissing: number;
+  breedingMissingNames?: string[];
   totalPassives: number;
   implantPassives: number;
   worldTreePassives: number;

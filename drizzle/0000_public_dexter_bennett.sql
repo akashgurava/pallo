@@ -3,11 +3,12 @@ CREATE TABLE `raw_breeding_combos` (
 	`parent2_id` integer NOT NULL,
 	`child_id` integer NOT NULL,
 	PRIMARY KEY(`parent1_id`, `parent2_id`),
-	FOREIGN KEY (`parent1_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`parent2_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`child_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`parent1_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`parent2_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`child_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE INDEX `raw_breeding_combos_child_id_idx` ON `raw_breeding_combos` (`child_id`);--> statement-breakpoint
 CREATE TABLE `raw_elements` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -30,8 +31,8 @@ CREATE TABLE `raw_pal_elements` (
 	`pal_id` integer NOT NULL,
 	`element_id` integer NOT NULL,
 	PRIMARY KEY(`pal_id`, `element_id`),
-	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`element_id`) REFERENCES `raw_elements`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`element_id`) REFERENCES `raw_elements`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `raw_pal_mounts` (
@@ -39,8 +40,8 @@ CREATE TABLE `raw_pal_mounts` (
 	`mount_type_id` integer NOT NULL,
 	`unlock_level` integer NOT NULL,
 	PRIMARY KEY(`pal_id`, `mount_type_id`),
-	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`mount_type_id`) REFERENCES `raw_mount_types`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`mount_type_id`) REFERENCES `raw_mount_types`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `raw_pal_movement` (
@@ -53,7 +54,7 @@ CREATE TABLE `raw_pal_movement` (
 	`swim_speed` integer,
 	`swim_dash_speed` integer,
 	`stamina` integer,
-	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `raw_pal_stats` (
@@ -73,16 +74,17 @@ CREATE TABLE `raw_pal_stats` (
 	`price` integer,
 	`egg` text,
 	`code` text,
-	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `raw_pal_stats_code_unique` ON `raw_pal_stats` (`code`);--> statement-breakpoint
 CREATE TABLE `raw_pal_work_suitabilities` (
 	`pal_id` integer NOT NULL,
 	`work_type_id` integer NOT NULL,
 	`level` integer NOT NULL,
 	PRIMARY KEY(`pal_id`, `work_type_id`),
-	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`work_type_id`) REFERENCES `raw_work_types`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`work_type_id`) REFERENCES `raw_work_types`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `raw_pals` (
@@ -92,6 +94,7 @@ CREATE TABLE `raw_pals` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `raw_pals_name_unique` ON `raw_pals` (`name`);--> statement-breakpoint
 CREATE TABLE `raw_passive_skills` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -111,19 +114,26 @@ CREATE TABLE `raw_passive_skills` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `raw_passive_skills_name_unique` ON `raw_passive_skills` (`name`);--> statement-breakpoint
+CREATE TABLE `user_pal_passives` (
+	`user_pal_id` integer NOT NULL,
+	`passive_skill_id` integer NOT NULL,
+	`slot` integer DEFAULT 0 NOT NULL,
+	PRIMARY KEY(`user_pal_id`, `passive_skill_id`),
+	FOREIGN KEY (`user_pal_id`) REFERENCES `user_pals`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`passive_skill_id`) REFERENCES `raw_passive_skills`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE INDEX `user_pal_passives_passive_skill_id_idx` ON `user_pal_passives` (`passive_skill_id`);--> statement-breakpoint
 CREATE TABLE `user_pals` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`pal_id` integer NOT NULL,
-	`character_id` text NOT NULL,
 	`nickname` text,
 	`gender` text DEFAULT 'Male' NOT NULL,
 	`level` integer DEFAULT 1 NOT NULL,
 	`hp_iv` integer DEFAULT 0 NOT NULL,
 	`attack_iv` integer DEFAULT 0 NOT NULL,
-	`shot_iv` integer DEFAULT 0 NOT NULL,
 	`defense_iv` integer DEFAULT 0 NOT NULL,
-	`passives` text DEFAULT '[]' NOT NULL,
-	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pal_id`) REFERENCES `raw_pals`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `raw_work_types` (

@@ -1,9 +1,9 @@
-import { getConnection } from "$lib/server/db/index.js";
-import { breedingCombos, pals, palElements, elements } from "$lib/server/db/schema.js";
+import { getConnection } from "$lib/server/db/index";
+import { breedingCombos, pals, palElements, elements } from "$lib/server/db/schema";
 import { asc, eq } from "drizzle-orm";
-import { createLogger } from "$lib/server/logger.js";
+import { createLogger } from "$lib/server/logger";
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types.js";
+import type { RequestHandler } from "./$types";
 
 const log = createLogger("api:breeding:parents");
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { MountInfo } from "$lib/types.js";
+  import type { MountInfo } from "$lib/types";
 
   let { pal }: { pal: { number: string; name: string; elements: string[]; mounts: MountInfo[] } } =
     $props();

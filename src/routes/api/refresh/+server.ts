@@ -1,15 +1,12 @@
-import { resetDatabase, stampRefresh } from "$lib/server/db/reset.js";
-import { runListScrape } from "$lib/server/scraper/run-list.js";
-import { runMountsScrape } from "$lib/server/scraper/run-mounts.js";
-import { runDetailScrape } from "$lib/server/scraper/run-details.js";
-import { runBreedingScrape } from "$lib/server/scraper/run-breeding.js";
-import { runPassivesScrape } from "$lib/server/scraper/run-passives.js";
-import { createLogger } from "$lib/server/logger.js";
-import type { RequestHandler } from "./$types.js";
+import { resetDatabase, stampRefresh } from "$lib/server/db/reset";
+import { runPalsOrchestrator, runBreedingOrchestrator } from "$lib/server/scraper/orchestrators";
+import { createLogger } from "$lib/server/logger";
+import type { RequestHandler } from "./$types";
 
 const log = createLogger("api:refresh");
 
-export const POST: RequestHandler = async () => {
+export const POST: RequestHandler = async ({ url }) => {
+  const target = url.searchParams.get("target"); // "pals" | "breeding" | null (all)
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -20,50 +17,59 @@ export const POST: RequestHandler = async () => {
         failed?: boolean;
         done?: boolean;
       }): void {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        try {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        } catch (e) {
+          log.debug("failed to enqueue SSE data", { error: String(e) });
+        }
+      }
+
+      function handleFail(message: string): void {
+        send({ progress: -1, message, failed: true });
       }
 
       async function run(): Promise<void> {
         try {
-          log.info("refresh started");
+          log.info("refresh started", { target: target || "all" });
 
-          send({ progress: 0, message: "Resetting database..." });
-          await resetDatabase();
-          send({ progress: 2, message: "Database reset" });
+          if (target === "pals") {
+            await runPalsOrchestrator(
+              (message, progress) => send({ progress, message }),
+              handleFail,
+            );
+          } else if (target === "breeding") {
+            await runBreedingOrchestrator(
+              (message, progress) => send({ progress, message }),
+              handleFail,
+            );
+          } else {
+            send({ progress: 0, message: "Resetting database..." });
+            await resetDatabase();
+            send({ progress: 2, message: "Database reset" });
 
-          await runListScrape((message, progress) => send({ progress, message }), 2, 10);
-
-          await runMountsScrape((message, progress) => send({ progress, message }), 10, 20);
-
-          await runDetailScrape(
-            (message, progress) => send({ progress, message }),
-            (message) => send({ progress: -1, message, failed: true }),
-            20,
-            55,
-          );
-
-          await runBreedingScrape(
-            (message, progress) => send({ progress, message }),
-            (message) => send({ progress: -1, message, failed: true }),
-            55,
-            88,
-          );
-
-          await runPassivesScrape(
-            (message, progress) => send({ progress, message }),
-            88,
-            98,
-          );
+            await runPalsOrchestrator(
+              (message, progress) => send({ progress: Math.round(progress * 0.7), message }),
+              handleFail,
+            );
+            await runBreedingOrchestrator(
+              (message, progress) => send({ progress: 70 + Math.round(progress * 0.28), message }),
+              handleFail,
+            );
+          }
 
           await stampRefresh();
           send({ progress: 100, message: "Complete", done: true });
-          log.info("refresh complete");
+          log.info("refresh complete", { target: target || "all" });
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          log.error("refresh failed", { error: message });
+          log.error("refresh failed", { target: target || "all", error: message });
           send({ progress: -1, message: `Error: ${message}`, done: true });
         } finally {
-          controller.close();
+          try {
+            controller.close();
+          } catch (e) {
+            log.debug("controller already closed in finally", { error: String(e) });
+          }
         }
       }
 

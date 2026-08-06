@@ -1,4 +1,4 @@
-import type { PalRow } from "$lib/types.js";
+import type { PalRow } from "$lib/types";
 
 export type FilterLogic = "and" | "or";
 

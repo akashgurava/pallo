@@ -1,4 +1,4 @@
-import { getConnection } from "$lib/server/db/index.js";
+import { getConnection } from "$lib/server/db/index";
 import {
   pals,
   elements,
@@ -9,12 +9,12 @@ import {
   palMounts,
   palStats,
   palMovement,
-} from "$lib/server/db/schema.js";
+} from "$lib/server/db/schema";
 import { asc, eq } from "drizzle-orm";
-import { createLogger } from "$lib/server/logger.js";
+import { createLogger } from "$lib/server/logger";
 import { json } from "@sveltejs/kit";
-import type { PalRow } from "$lib/types.js";
-import type { RequestHandler } from "./$types.js";
+import type { PalRow } from "$lib/types";
+import type { RequestHandler } from "./$types";
 
 const log = createLogger("api:pals");
 

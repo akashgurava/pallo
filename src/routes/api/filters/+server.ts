@@ -1,8 +1,8 @@
-import { getConnection } from "$lib/server/db/index.js";
-import { elements, workTypes } from "$lib/server/db/schema.js";
-import { createLogger } from "$lib/server/logger.js";
+import { getConnection } from "$lib/server/db/index";
+import { elements, workTypes } from "$lib/server/db/schema";
+import { createLogger } from "$lib/server/logger";
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types.js";
+import type { RequestHandler } from "./$types";
 
 const log = createLogger("api:filters");
 

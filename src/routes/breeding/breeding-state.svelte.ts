@@ -1,4 +1,4 @@
-import type { PalRow } from "$lib/types.js";
+import type { PalRow } from "$lib/types";
 
 interface StoredState {
   parentAId?: number | undefined;
@@ -157,7 +157,8 @@ class BreedingState {
       if (state.activeTab) this.#activeTab = state.activeTab;
       if (state.childFilterId) this.#pendingChildFilterId = state.childFilterId;
       if (state.parentBFilterId) this.#pendingParentBFilterId = state.parentBFilterId;
-      if (state.reverseParentFilterId) this.#pendingReverseParentFilterId = state.reverseParentFilterId;
+      if (state.reverseParentFilterId)
+        this.#pendingReverseParentFilterId = state.reverseParentFilterId;
     } catch {
       // ignore corrupt storage
     }
@@ -174,11 +175,11 @@ class BreedingState {
       this.#pendingParentBFilterId = null;
     }
     if (this.#pendingReverseParentFilterId && this.#reverseChild && pals.length > 0) {
-      this.#reverseParentFilter = pals.find((p) => p.id === this.#pendingReverseParentFilterId) ?? null;
+      this.#reverseParentFilter =
+        pals.find((p) => p.id === this.#pendingReverseParentFilterId) ?? null;
       this.#pendingReverseParentFilterId = null;
     }
   }
-
 
   #save(): void {
     if (!this.#initialized || typeof window === "undefined") return;

@@ -3,9 +3,9 @@
   import PalAutocomplete from "$lib/components/PalAutocomplete.svelte";
   import PalTable from "$lib/components/PalTable.svelte";
   import ElementIcon from "$lib/components/ElementIcon.svelte";
-  import { sortPals, type SortKey, type SortDir } from "$lib/sorting.js";
-  import type { WorkTypeFilter } from "$lib/filters.js";
-  import type { PalRow, WorkSuitability, MountInfo, PalStatsData, PalMovement } from "$lib/types.js";
+  import { sortPals, type SortKey, type SortDir } from "$lib/sorting";
+  import type { WorkTypeFilter } from "$lib/filters";
+  import type { PalRow, WorkSuitability, MountInfo, PalStatsData, PalMovement } from "$lib/types";
 
   interface BreedingChild {
     id: number;
@@ -201,7 +201,9 @@
         {pals}
         selected={singleParent}
         placeholder="Search parent..."
-        onSelect={(pal) => { singleParent = pal; }}
+        onSelect={(pal) => {
+          singleParent = pal;
+        }}
       />
     </div>
     <div>
@@ -287,7 +289,9 @@
       <div class="max-w-full overflow-x-auto px-2 py-1">
         <div class="flex flex-nowrap items-center gap-1.5 py-0.5">
           {#each parentBList as parentB (parentB.id)}
-            <div class="flex shrink-0 items-center gap-1.5 rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1 text-xs">
+            <div
+              class="flex shrink-0 items-center gap-1.5 rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1 text-xs"
+            >
               <span class="font-mono text-neutral-400">#{parentB.number}</span>
               <span class="font-medium text-neutral-200">{parentB.name}</span>
               <div class="flex items-center gap-0.5">
@@ -298,9 +302,16 @@
               {#if parentB.mounts.length > 0}
                 <div class="flex items-center gap-0.5 border-l border-neutral-800 pl-1">
                   {#each parentB.mounts as mount (mount.type)}
-                    <img src="/icons/mounts/{mount.type.toLowerCase()}.svg" alt={mount.type} class="size-3.5" title="{mount.type} Mount" />
+                    <img
+                      src="/icons/mounts/{mount.type.toLowerCase()}.svg"
+                      alt={mount.type}
+                      class="size-3.5"
+                      title="{mount.type} Mount"
+                    />
                   {/each}
-                  <span class="text-neutral-400 text-[10px] font-semibold">{parentB.mounts[0]?.unlockLevel}</span>
+                  <span class="text-[10px] font-semibold text-neutral-400"
+                    >{parentB.mounts[0]?.unlockLevel}</span
+                  >
                 </div>
               {/if}
             </div>

@@ -1,0 +1,10 @@
+[project]
+name = "pallo"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "palsav-flex",
+]
+
+[tool.uv.sources]
+palsav-flex = { git = "https://github.com/deafdudecomputers/PalworldSaveTools.git", subdirectory = "src/palsav" }

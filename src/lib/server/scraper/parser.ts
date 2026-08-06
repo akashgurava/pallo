@@ -1,6 +1,6 @@
 import { parse } from "node-html-parser";
-import { createLogger } from "../logger.js";
-import type { PalListEntry } from "$lib/types.js";
+import { createLogger } from "../logger";
+import type { PalListEntry } from "$lib/types";
 
 const log = createLogger("scraper:parser");
 

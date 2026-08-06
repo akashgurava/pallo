@@ -1,10 +1,10 @@
 <script lang="ts">
-  import * as Table from "$lib/components/ui/table/index.js";
+  import * as Table from "$lib/components/ui/table/index";
   import SortableHead from "./SortableHead.svelte";
   import PalTableRow from "./PalTableRow.svelte";
-  import type { PalRow } from "$lib/types.js";
-  import type { SortKey, SortDir } from "$lib/sorting.js";
-  import type { WorkTypeFilter } from "$lib/filters.js";
+  import type { PalRow } from "$lib/types";
+  import type { SortKey, SortDir } from "$lib/sorting";
+  import type { WorkTypeFilter } from "$lib/filters";
 
   let {
     pals,

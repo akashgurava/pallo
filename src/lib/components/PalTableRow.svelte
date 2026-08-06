@@ -1,10 +1,10 @@
 <script lang="ts">
-  import * as Table from "$lib/components/ui/table/index.js";
+  import * as Table from "$lib/components/ui/table/index";
   import ElementIcon from "./ElementIcon.svelte";
   import WorkTypeIcon from "./WorkTypeIcon.svelte";
   import MountIcon from "./MountIcon.svelte";
-  import type { PalRow } from "$lib/types.js";
-  import type { WorkTypeFilter } from "$lib/filters.js";
+  import type { PalRow } from "$lib/types";
+  import type { WorkTypeFilter } from "$lib/filters";
 
   let {
     pal,
@@ -25,14 +25,21 @@
   let expanded = $state(false);
 </script>
 
-<Table.Row class={expandedRow ? "cursor-pointer hover:bg-neutral-800/40" : ""} onclick={() => expandedRow && (expanded = !expanded)}>
+<Table.Row
+  class={expandedRow ? "cursor-pointer hover:bg-neutral-800/40" : ""}
+  onclick={() => expandedRow && (expanded = !expanded)}
+>
   <Table.Cell class="px-3">
     <div class="flex items-center gap-1">
       {#if expandedRow}
-        <span class="text-muted-foreground text-xs transition-transform duration-150 {expanded ? 'rotate-90' : ''}">▶</span>
+        <span
+          class="text-muted-foreground text-xs transition-transform duration-150 {expanded
+            ? 'rotate-90'
+            : ''}">▶</span
+        >
       {/if}
       <span class="text-muted-foreground font-mono text-xs">{pal.number}{pal.variant ?? ""}</span>
-      <span class="whitespace-nowrap px-1 text-sm font-semibold">{pal.name}</span>
+      <span class="px-1 text-sm font-semibold whitespace-nowrap">{pal.name}</span>
       {#each pal.elements as element (element)}
         <ElementIcon
           name={element}
@@ -99,7 +106,7 @@
   <Table.Cell class="px-1 text-center tabular-nums">{pal.stats?.price ?? "-"}</Table.Cell>
 </Table.Row>
 {#if expandedRow && expanded}
-  <Table.Row class="bg-neutral-950/80 border-b border-neutral-800">
+  <Table.Row class="border-b border-neutral-800 bg-neutral-950/80">
     <Table.Cell colspan={18} class="p-3">
       {@render expandedRow(pal)}
     </Table.Cell>

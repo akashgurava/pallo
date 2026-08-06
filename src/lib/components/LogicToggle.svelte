@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { FilterLogic } from "$lib/filters.js";
+  import type { FilterLogic } from "$lib/filters";
 
   let {
     value,

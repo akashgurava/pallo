@@ -1,4 +1,4 @@
-import { integer, real, sqliteTable, text, primaryKey } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text, primaryKey, index } from "drizzle-orm/sqlite-core";
 
 /** App metadata (last refresh timestamp, etc.) */
 export const meta = sqliteTable("meta", {
@@ -50,7 +50,7 @@ export const pals = sqliteTable("raw_pals", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   number: text("number").notNull(),
   variant: text("variant"),
-  name: text("name").notNull(),
+  name: text("name").notNull().unique(),
 });
 
 /** Pal-to-element associations from the paldb list page. */
@@ -59,10 +59,10 @@ export const palElements = sqliteTable(
   {
     palId: integer("pal_id")
       .notNull()
-      .references(() => pals.id),
+      .references(() => pals.id, { onDelete: "cascade" }),
     elementId: integer("element_id")
       .notNull()
-      .references(() => elements.id),
+      .references(() => elements.id, { onDelete: "cascade" }),
   },
   (table) => [primaryKey({ columns: [table.palId, table.elementId] })],
 );
@@ -73,10 +73,10 @@ export const palWorkSuitabilities = sqliteTable(
   {
     palId: integer("pal_id")
       .notNull()
-      .references(() => pals.id),
+      .references(() => pals.id, { onDelete: "cascade" }),
     workTypeId: integer("work_type_id")
       .notNull()
-      .references(() => workTypes.id),
+      .references(() => workTypes.id, { onDelete: "cascade" }),
     level: integer("level").notNull(),
   },
   (table) => [primaryKey({ columns: [table.palId, table.workTypeId] })],
@@ -86,7 +86,7 @@ export const palWorkSuitabilities = sqliteTable(
 export const palStats = sqliteTable("raw_pal_stats", {
   palId: integer("pal_id")
     .primaryKey()
-    .references(() => pals.id),
+    .references(() => pals.id, { onDelete: "cascade" }),
   size: text("size"),
   rarity: integer("rarity"),
   health: integer("health"),
@@ -101,14 +101,14 @@ export const palStats = sqliteTable("raw_pal_stats", {
   combiRank: integer("combi_rank"),
   price: integer("price"),
   egg: text("egg"),
-  code: text("code"),
+  code: text("code").unique(),
 });
 
 /** Movement card data from each pal's detail page on paldb. */
 export const palMovement = sqliteTable("raw_pal_movement", {
   palId: integer("pal_id")
     .primaryKey()
-    .references(() => pals.id),
+    .references(() => pals.id, { onDelete: "cascade" }),
   slowWalkSpeed: integer("slow_walk_speed"),
   walkSpeed: integer("walk_speed"),
   runSpeed: integer("run_speed"),
@@ -125,10 +125,10 @@ export const palMounts = sqliteTable(
   {
     palId: integer("pal_id")
       .notNull()
-      .references(() => pals.id),
+      .references(() => pals.id, { onDelete: "cascade" }),
     mountTypeId: integer("mount_type_id")
       .notNull()
-      .references(() => mountTypes.id),
+      .references(() => mountTypes.id, { onDelete: "cascade" }),
     unlockLevel: integer("unlock_level").notNull(),
   },
   (table) => [primaryKey({ columns: [table.palId, table.mountTypeId] })],
@@ -140,15 +140,18 @@ export const breedingCombos = sqliteTable(
   {
     parent1Id: integer("parent1_id")
       .notNull()
-      .references(() => pals.id),
+      .references(() => pals.id, { onDelete: "cascade" }),
     parent2Id: integer("parent2_id")
       .notNull()
-      .references(() => pals.id),
+      .references(() => pals.id, { onDelete: "cascade" }),
     childId: integer("child_id")
       .notNull()
-      .references(() => pals.id),
+      .references(() => pals.id, { onDelete: "cascade" }),
   },
-  (table) => [primaryKey({ columns: [table.parent1Id, table.parent2Id] })],
+  (table) => [
+    primaryKey({ columns: [table.parent1Id, table.parent2Id] }),
+    index("raw_breeding_combos_child_id_idx").on(table.childId),
+  ],
 );
 
 /** Extracted pals saved from user's Level.sav file. */
@@ -156,14 +159,29 @@ export const userPals = sqliteTable("user_pals", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   palId: integer("pal_id")
     .notNull()
-    .references(() => pals.id),
-  characterId: text("character_id").notNull(),
+    .references(() => pals.id, { onDelete: "cascade" }),
   nickname: text("nickname"),
   gender: text("gender").notNull().default("Male"),
   level: integer("level").notNull().default(1),
   hpIv: integer("hp_iv").notNull().default(0),
   attackIv: integer("attack_iv").notNull().default(0),
-  shotIv: integer("shot_iv").notNull().default(0),
   defenseIv: integer("defense_iv").notNull().default(0),
-  passives: text("passives").notNull().default("[]"),
 });
+
+/** Junction table linking user's extracted pal to passive skills in raw_passive_skills with foreign key constraints. */
+export const userPalPassives = sqliteTable(
+  "user_pal_passives",
+  {
+    userPalId: integer("user_pal_id")
+      .notNull()
+      .references(() => userPals.id, { onDelete: "cascade" }),
+    passiveSkillId: integer("passive_skill_id")
+      .notNull()
+      .references(() => passiveSkills.id, { onDelete: "cascade" }),
+    slot: integer("slot").notNull().default(0),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userPalId, table.passiveSkillId] }),
+    index("user_pal_passives_passive_skill_id_idx").on(table.passiveSkillId),
+  ],
+);
