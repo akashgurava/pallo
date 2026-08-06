@@ -26,7 +26,8 @@ async function getPassivesMap() {
     const { db } = getConnection();
     const list = await db.select().from(passiveSkills);
     return Object.fromEntries(list.map((p) => [p.name, p]));
-  } catch (e) {
+  } catch (err) {
+    console.warn("Failed to get passives map:", err);
     return {};
   }
 }
@@ -120,7 +121,9 @@ async function savePalsToDb(extracted: ExtractedPal[]): Promise<void> {
                 slot: slot,
               })
               .run();
-          } catch (e) {}
+          } catch (err) {
+            console.warn("Failed to insert user pal passive:", err);
+          }
         }
       }
     }
@@ -246,9 +249,10 @@ export const GET: RequestHandler = async () => {
       pals: pals,
       passivesMap: passivesMap,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     return json(
-      { error: err.message || "Failed to read save data", pals: [], passivesMap: {} },
+      { error: message || "Failed to read save data", pals: [], passivesMap: {} },
       { status: 500 },
     );
   }
@@ -280,7 +284,9 @@ export const POST: RequestHandler = async ({ request }) => {
     const timestampedSavPath = path.join(dataDir, `Level_${timestamp}.sav`);
     try {
       fs.writeFileSync(timestampedSavPath, fileBuffer);
-    } catch (e) {}
+    } catch (err) {
+      console.warn("Failed to write timestamped Level.sav copy:", err);
+    }
 
     // Process uploaded file
     const gvasBuf = PalSaveReader.decompressSavFile(tmpSavPath);
@@ -293,7 +299,9 @@ export const POST: RequestHandler = async ({ request }) => {
     // Cleanup temp directory
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
-    } catch (e) {}
+    } catch (err) {
+      console.warn("Failed to cleanup temp upload dir:", err);
+    }
 
     return json({
       success: true,
@@ -302,10 +310,11 @@ export const POST: RequestHandler = async ({ request }) => {
       pals: pals,
       passivesMap: passivesMap,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     return json(
       {
-        error: err.message || "Failed to parse uploaded Level.sav file",
+        error: message || "Failed to parse uploaded Level.sav file",
         pals: [],
         passivesMap: {},
       },

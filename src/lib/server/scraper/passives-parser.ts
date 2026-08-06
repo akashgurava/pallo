@@ -45,9 +45,9 @@ export function parsePassiveSkillsPage(html: string): ParsedPassiveSkill[] {
     }
 
     // Find parent container box
-    let container: any = banner.parentNode;
+    let container: Element | null = banner.parentNode as Element | null;
     while (container && container.classList && !container.classList.contains("border")) {
-      container = container.parentNode;
+      container = container.parentNode as Element | null;
     }
     if (!container) continue;
 

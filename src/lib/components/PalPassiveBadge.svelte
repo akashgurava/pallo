@@ -156,7 +156,7 @@
       {:else if rank < 0}
         <!-- Negative Ranks: Down Chevrons -->
         <div class="flex flex-col items-center justify-center -space-y-0.75">
-          {#each Array(Math.abs(rank)) as _}
+          {#each Array(Math.abs(rank)), i (i)}
             <span class="block h-2 w-2 -rotate-45 border-b-[2.5px] border-l-[2.5px] border-current"
             ></span>
           {/each}
@@ -228,7 +228,7 @@
       {:else if rank < 0}
         <!-- Negative Ranks: Down Chevrons -->
         <div class="flex flex-col items-center justify-center -space-y-0.75">
-          {#each Array(Math.abs(rank)) as _}
+          {#each Array(Math.abs(rank)), i (i)}
             <span class="block h-2 w-2 -rotate-45 border-b-[2.5px] border-l-[2.5px] border-current"
             ></span>
           {/each}

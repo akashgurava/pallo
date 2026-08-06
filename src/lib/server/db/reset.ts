@@ -51,13 +51,17 @@ export async function resetDatabase(): Promise<void> {
   } finally {
     try {
       await client.execute("PRAGMA foreign_keys = ON;");
-    } catch {}
+    } catch (err) {
+      log.debug("failed to re-enable foreign_keys PRAGMA", { error: String(err) });
+    }
   }
 
   // 2. Attempt file unlinking for a 100% pristine SQLite file state
   try {
     client.close();
-  } catch {}
+  } catch (err) {
+    log.debug("failed to close client before unlink", { error: String(err) });
+  }
 
   for (const f of ["pallo.db", "pallo.db-wal", "pallo.db-shm"]) {
     if (existsSync(f)) {

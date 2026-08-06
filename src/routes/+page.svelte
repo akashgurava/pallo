@@ -198,7 +198,7 @@
                   <div
                     class="max-h-36 space-y-0.5 overflow-y-auto text-left font-mono text-[11px] leading-relaxed text-neutral-300"
                   >
-                    {#each stats.failedPalNames as pName}
+                    {#each stats.failedPalNames as pName (pName)}
                       <div>• {pName}</div>
                     {/each}
                   </div>
@@ -311,7 +311,7 @@
                   <div
                     class="max-h-36 space-y-0.5 overflow-y-auto text-left font-mono text-[11px] leading-relaxed text-neutral-300"
                   >
-                    {#each stats.breedingMissingNames ?? [] as pName}
+                    {#each stats.breedingMissingNames ?? [] as pName (pName)}
                       <div>• {pName}</div>
                     {/each}
                   </div>
@@ -337,7 +337,7 @@
     <section class="space-y-3 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4">
       <h2 class="text-xs font-bold tracking-wider text-neutral-400 uppercase">Elements</h2>
       <div class="grid grid-cols-9 gap-2">
-        {#each defaultElements as elName}
+        {#each defaultElements as elName (elName)}
           <div
             class="flex items-center justify-center gap-2 rounded-lg border border-neutral-800/80 bg-neutral-950/60 p-2"
             title={elName}
@@ -357,7 +357,7 @@
     <section class="space-y-3 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4">
       <h2 class="text-xs font-bold tracking-wider text-neutral-400 uppercase">Work Suitability</h2>
       <div class="grid grid-cols-6 gap-2.5">
-        {#each defaultWorkTypes as workName}
+        {#each defaultWorkTypes as workName (workName)}
           <div
             class="flex items-center gap-2.5 rounded-lg border border-neutral-800/80 bg-neutral-950/60 p-2"
             title={workName}

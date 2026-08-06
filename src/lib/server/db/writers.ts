@@ -1,4 +1,6 @@
 import { eq } from "drizzle-orm";
+import type { LibSQLDatabase } from "drizzle-orm/libsql";
+import * as schema from "./schema";
 import {
   pals,
   elements,
@@ -19,12 +21,13 @@ import type { ParsedPassiveSkill } from "../scraper/passives-parser";
 import type { BreedingEntry } from "../scraper/breeding-parser";
 
 export type DetailData = ReturnType<typeof parseDetailPage>;
+export type DB = LibSQLDatabase<typeof schema>;
 
 /** Writes scraped Pals list, elements, and work suitabilities into database */
 export async function writePalsList(
-  db: any,
+  db: DB,
   parsedList: { pals: PalListEntry[]; elementOrder: string[]; workTypeOrder: string[] },
-) {
+): Promise<void> {
   const { pals: palList, elementOrder, workTypeOrder } = parsedList;
   const elementMap = new Map<string, number>();
   const workTypeMap = new Map<string, number>();
@@ -84,7 +87,7 @@ export async function writePalsList(
 }
 
 /** Writes scraped mount associations into database */
-export async function writeMounts(db: any, mounts: MountEntry[]) {
+export async function writeMounts(db: DB, mounts: MountEntry[]): Promise<void> {
   const mountTypeMap = new Map<string, number>();
 
   for (const entry of mounts) {
@@ -126,7 +129,7 @@ export async function writeMounts(db: any, mounts: MountEntry[]) {
 }
 
 /** Writes scraped stats and movement data for a Pal into database */
-export async function writePalDetail(db: any, palId: number, data: DetailData) {
+export async function writePalDetail(db: DB, palId: number, data: DetailData): Promise<void> {
   await db
     .insert(palStats)
     .values({ palId, code: data.code, egg: data.egg, ...data.stats })
@@ -141,7 +144,7 @@ export async function writePalDetail(db: any, palId: number, data: DetailData) {
 }
 
 /** Writes scraped passive skills into database */
-export async function writePassives(db: any, parsedPassives: ParsedPassiveSkill[]) {
+export async function writePassives(db: DB, parsedPassives: ParsedPassiveSkill[]): Promise<void> {
   for (const p of parsedPassives) {
     await db
       .insert(passiveSkills)
@@ -185,11 +188,11 @@ export async function writePassives(db: any, parsedPassives: ParsedPassiveSkill[
 
 /** Writes parsed breeding combinations into database */
 export async function writeBreedingCombos(
-  db: any,
+  db: DB,
   palId: number,
   entries: BreedingEntry[],
   codeToId: Map<string, number>,
-) {
+): Promise<number> {
   let inserted = 0;
   for (const entry of entries) {
     const parent2Id = codeToId.get(entry.parent2Code);

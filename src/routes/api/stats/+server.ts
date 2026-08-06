@@ -12,7 +12,7 @@ import {
   passiveSkills,
   meta,
 } from "$lib/server/db/schema";
-import { asc, count, eq, isNotNull } from "drizzle-orm";
+import { asc, count, eq } from "drizzle-orm";
 import { createLogger } from "$lib/server/logger";
 import { json } from "@sveltejs/kit";
 import type { Stats } from "$lib/types";

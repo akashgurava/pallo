@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { SvelteSet } from "svelte/reactivity";
   import type { ExtractedPal } from "$lib/server/save_reader/save_reader";
   import type { PalRow } from "$lib/types";
   import PalCard from "$lib/components/PalCard.svelte";
@@ -69,7 +70,7 @@
    * Dynamically calculates available passive skill names based on currently active Pal & High-IV filters
    */
   const availablePassiveNamesInSave = $derived.by(() => {
-    const set = new Set<string>();
+    const set = new SvelteSet<string>();
     for (const pal of pals) {
       // 1. Filter by selected Pal from PalAutocomplete
       if (selectedPal) {
@@ -199,7 +200,7 @@
           ? data.savePath.split("/").pop() || "Level.sav"
           : "Level.sav";
       }
-    } catch (e: any) {
+    } catch {
       // Ignore initial auto-load errors if no save exists yet
     } finally {
       loading = false;
@@ -233,8 +234,8 @@
 
       pals = data.pals || [];
       loadedFileName = file.name;
-    } catch (e: any) {
-      error = e.message;
+    } catch (err: unknown) {
+      error = err instanceof Error ? err.message : String(err);
     } finally {
       loading = false;
     }

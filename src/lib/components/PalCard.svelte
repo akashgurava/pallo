@@ -30,7 +30,7 @@
       <!-- Element Icons -->
       {#if pal.elements && pal.elements.length > 0}
         <div class="flex shrink-0 items-center gap-0.5">
-          {#each pal.elements as el}
+          {#each pal.elements as el (el)}
             <ElementIcon name={el} size="size-4" />
           {/each}
         </div>
@@ -64,7 +64,7 @@
 
   <!-- Right Side: 2x2 Grid of Compact Passive Badges -->
   <div class="grid min-w-0 flex-1 grid-cols-2 gap-1.5">
-    {#each passiveSlots as passiveName}
+    {#each passiveSlots as passiveName, idx (idx)}
       <PalPassiveBadge name={passiveName} info={passivesMap[passiveName]} />
     {/each}
   </div>

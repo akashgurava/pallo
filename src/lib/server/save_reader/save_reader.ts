@@ -245,7 +245,9 @@ export class PalSaveReader {
           const buf = fs.readFileSync(gvasCachePath);
           try {
             fs.writeFileSync(timestampedGvasPath, buf);
-          } catch (e) {}
+          } catch (err) {
+            console.warn("Failed to save timestamped GVAS:", err);
+          }
           return buf;
         }
       }
@@ -258,14 +260,17 @@ export class PalSaveReader {
         execSync(`uv run python3 scripts/decompress_sav.py "${cleanSavPath}" "${cleanGvasPath}"`, {
           stdio: "pipe",
         });
-      } catch (err: any) {
-        throw new Error(`Failed to decompress PlM save file: ${err.message}`);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        throw new Error(`Failed to decompress PlM save file: ${message}`, { cause: err });
       }
 
       const decompBuf = fs.readFileSync(gvasCachePath);
       try {
         fs.writeFileSync(timestampedGvasPath, decompBuf);
-      } catch (e) {}
+      } catch (err) {
+        console.warn("Failed to save decompressed GVAS:", err);
+      }
       return decompBuf;
     }
 
@@ -275,7 +280,9 @@ export class PalSaveReader {
       const decompBuf = fileBuf.subarray(gvasIdx);
       try {
         fs.writeFileSync(timestampedGvasPath, decompBuf);
-      } catch (e) {}
+      } catch (err) {
+        console.warn("Failed to save GVAS subarray:", err);
+      }
       return decompBuf;
     }
 
@@ -333,21 +340,21 @@ export class PalSaveReader {
     const maxLimit = Math.min(buf.length, startOffset + 4000);
 
     while (offset + 4 < maxLimit) {
-      let propName = "";
+      let propName: string;
       try {
         const len = buf.readInt32LE(offset);
         offset += 4;
         if (len <= 0 || len > 256) break;
         propName = buf.toString("utf8", offset, offset + len - 1);
         offset += len;
-      } catch (e) {
+      } catch {
         break;
       }
 
       if (propName === "None" || !propName) break;
 
-      let propType = "";
-      let propSize = 0;
+      let propType: string;
+      let propSize: number;
       try {
         const typeLen = buf.readInt32LE(offset);
         offset += 4;
@@ -357,7 +364,7 @@ export class PalSaveReader {
 
         propSize = Number(buf.readBigUInt64LE(offset));
         offset += 8;
-      } catch (e) {
+      } catch {
         break;
       }
 
